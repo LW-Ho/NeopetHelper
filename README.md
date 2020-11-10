@@ -8,6 +8,7 @@ If there's a task you need done let me know and I'll try to get that for you soo
 ## How to use
 Basic python knowledge is needed but to get it running all you have to do is add your username and password to main.py and run it.
 
+## Classes
 ### Login
 This script is self-explanatory. It allows you to log into your Neopets account by providing your username, password and a Requests session.
 
