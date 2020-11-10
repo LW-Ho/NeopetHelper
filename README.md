@@ -11,6 +11,9 @@ Basic python knowledge is needed but to get it running all you have to do is add
 ### Login
 This script is self-explanatory. It allows you to log into your Neopets account by providing your username, password and a Requests session.
 
+### Bank
+This script allows you to deposit and withdraw neopoints from the bank; aswell as collect interest from the bank. Note: it doesn't support security pins which could be something you could contribute to the project.
+
 ### ShopWizard
 This script provides a core functionality of the Neopet website and it's to use the Shop Wizard. It can do things like search and find the cheapest price of an item for you. It can also buy an item for you if you wish.
 
