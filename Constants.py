@@ -11,6 +11,9 @@ NEO_INVENTORY_R = "http://www.neopets.com/inventory.phtml"
 NEO_BANK = "http://www.neopets.com/bank.phtml"
 NEO_BANK_INTEREST = "http://www.neopets.com/process_bank.phtml"
 
+#STOCK MARKET
+STOCK_MARKET_LIST = "http://www.neopets.com/stockmarket.phtml?type=list&full=true"
+
 #DAILIES
 NEO_TRUDYS = "http://www.neopets.com/trudys_surprise.phtml?delevent=yes"
 NEO_TRUDYS_SPIN = "http://www.neopets.com/trudydaily/ajax/claimprize.php"
