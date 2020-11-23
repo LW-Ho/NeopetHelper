@@ -1,8 +1,9 @@
-import Constants, pickle, time, timestamp, web
+import Constants, web
+import pickle, time, timestamp
 from bs4 import BeautifulSoup
 
 #I don't like how this function requires you send the source code of the bank
-#It should probably request the bank for itself
+#It should probably request the bank for itself or be set to private
 def getBankBalance(response):
     soup = BeautifulSoup(response, "html.parser")
     tag = soup.find(attrs={'onsubmit' : 'return one_submit();'})
@@ -30,38 +31,38 @@ def deposit(session, amount):
     return onHandBalance
 
 def withdraw(session, amount):
-    ##Need to return onHand balance
+
     response = web.get(session, Constants.NEO_BANK)
     bankBalance = getBankBalance(response)
-    #send POST to withdraw
+
+    #withdraw
     if amount <= bankBalance and amount!=0:
         postFields = {"type": "withdraw", "amount": amount}
-        source = web.post(session, Constants.NEO_BANK_INTEREST, postFields, Constants.NEO_BANK)
+        web.post(session, Constants.NEO_BANK_INTEREST, postFields, Constants.NEO_BANK)
+        return True
 
+    #insufficient funds
     else:
         print("Insufficient Funds")
+        return False
 
-def collectInterest(session):
-    waitKey = "interest"
+def collectInterest(session, times):
+    key = "interest"
 
-    file = open(r'times.pkl', 'rb')
-    times = pickle.load(file)
-    file.close()
-
-    timeExpiry = times.get(waitKey)
+    timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
         #Future edit check if interest has been collected
         #Return interest collected
-        response = web.get(session, Constants.NEO_BANK, Constants.NEO_HOMEPAGE)
+        web.get(session, Constants.NEO_BANK, Constants.NEO_HOMEPAGE)
 
         #send POST to collect interest
         postFields = {"type": "interest"}
-        source = web.post(session, Constants.NEO_BANK_INTEREST, postFields, Constants.NEO_BANK)
+        web.post(session, Constants.NEO_BANK_INTEREST, postFields, Constants.NEO_BANK)
 
         print("Bank interest collected :)")
-        times[waitKey] = timestamp.endOfDay()
+        times[key] = timestamp.endOfDay()
 
-        file = open(r'times.pkl', 'wb')
+        file = open('times.pkl', 'wb')
         pickle.dump(times, file)
         file.close()
