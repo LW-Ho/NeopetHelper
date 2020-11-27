@@ -42,12 +42,12 @@ def dailies(session):
     bank.collectInterest(session, times)
     stocks.buy_stock(session, times)
     trudysSurprise(session)
-    #shrine(session)
-    #jelly(session)
-    #fishing(session)
-    #omelette(session)
-    #tdmbgpop(session)
-    #healingSprings(session)
+    shrine(session)
+    jelly(session)
+    fishing(session)
+    omelette(session)
+    tdmbgpop(session)
+    healingSprings(session)
     #sticky(session)
     #tombola(session)
     #fruitMachine(session)
@@ -77,14 +77,11 @@ def trudysSurprise(session):
         file.close()
 
 def fishing(session):
+    global times
     waitTime = 13
-    dict = "fishing"
+    key = "fishing"
 
-    file = open(r'times.pkl', 'rb')
-    times = pickle.load(file)
-    file.close()
-
-    timeExpiry = times.get(dict)
+    timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
         response = web.get(session, Constants.NEO_FISHING)
@@ -94,7 +91,7 @@ def fishing(session):
 
         print("Went Fishing")
 
-        times[dict] = timestamp.getTimestamp(waitTime)
+        times[key] = timestamp.getTimestamp(waitTime)
 
         file = open(r'times.pkl', 'wb')
         pickle.dump(times, file)
@@ -102,13 +99,13 @@ def fishing(session):
 
 #Tombola might be broken, if not it needs to check if tombola is closed. Otherwise it looks bad and it lags hard.
 def tombola(session):
-    dict = "tombola"
+    key = "tombola"
 
     file = open(r'times.pkl', 'rb')
     times = pickle.load(file)
     file.close()
 
-    timeExpiry = times.get(dict)
+    timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
         response = web.get(session, Constants.NEO_TOMBOLA)
@@ -118,20 +115,17 @@ def tombola(session):
 
         print("Played Tombola")
 
-        times[dict] = timestamp.endOfDay()
+        times[key] = timestamp.endOfDay()
 
         file = open(r'times.pkl', 'wb')
         pickle.dump(times, file)
         file.close()
 
 def tdmbgpop(session):
-    dict = "tdmbgpop"
+    global times
+    key = "tdmbgpop"
 
-    file = open(r'times.pkl', 'rb')
-    times = pickle.load(file)
-    file.close()
-
-    timeExpiry = times.get(dict)
+    timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
         response = web.get(session, Constants.NEO_TDMBGPOP)
@@ -141,21 +135,18 @@ def tdmbgpop(session):
 
         print("Visited TDMBGPOP")
 
-        times[dict] = timestamp.endOfDay()
+        times[key] = timestamp.endOfDay()
 
         file = open(r'times.pkl', 'wb')
         pickle.dump(times, file)
         file.close()
 
 def healingSprings(session):
+    global times
     waitTime = 0.5
-    dict = "springs"
+    key = "springs"
 
-    file = open(r'times.pkl', 'rb')
-    times = pickle.load(file)
-    file.close()
-
-    timeExpiry = times.get(dict)
+    timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
         response = web.get(session, Constants.NEO_SPRINGS)
@@ -165,41 +156,34 @@ def healingSprings(session):
 
         print("Went to healing springs")
 
-        times[dict] = timestamp.getTimestamp(waitTime)
+        times[key] = timestamp.getTimestamp(waitTime)
 
         file = open(r'times.pkl', 'wb')
         pickle.dump(times, file)
         file.close()
 
 def sticky(session):
+    global times
     waitTime = 0.5
-    dict = "sticky"
+    key = "sticky"
 
-    file = open(r'times.pkl', 'rb')
-    times = pickle.load(file)
-    file.close()
-
-    timeExpiry = times.get(dict)
+    timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
         response = web.get(session, Constants.NEO_STICKY, Constants.NEO_SPRINGS)
 
         print("Got Sticky Snowball")
 
-        times[dict] = timestamp.getTimestamp(waitTime)
+        times[key] = timestamp.getTimestamp(waitTime)
 
         file = open(r'times.pkl', 'wb')
         pickle.dump(times, file)
         file.close()
 
 def omelette(session):
-    dict = "omelette"
-
-    file = open(r'times.pkl', 'rb')
-    times = pickle.load(file)
-    file.close()
-
-    timeExpiry = times.get(dict)
+    global times
+    key = "omelette"
+    timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
         response = web.get(session, Constants.NEO_OMELETTE)
@@ -209,20 +193,17 @@ def omelette(session):
 
         print("Collected an omelette")
 
-        times[dict] = timestamp.endOfDay()
+        times[key] = timestamp.endOfDay()
 
         file = open(r'times.pkl', 'wb')
         pickle.dump(times, file)
         file.close()
 
 def jelly(session):
-    dict = "jelly"
+    global times
+    key = "jelly"
 
-    file = open(r'times.pkl', 'rb')
-    times = pickle.load(file)
-    file.close()
-
-    timeExpiry = times.get(dict)
+    timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
         response = web.get(session, Constants.NEO_JELLY)
@@ -232,7 +213,7 @@ def jelly(session):
 
         print("Collected Jelly")
 
-        times[dict] = timestamp.endOfDay()
+        times[key] = timestamp.endOfDay()
 
         file = open(r'times.pkl', 'wb')
         pickle.dump(times, file)
@@ -240,13 +221,13 @@ def jelly(session):
 
 def fruitMachine(session):
     waitTime = 24
-    dict = "fruit"
+    key = "fruit"
 
     file = open(r'times.pkl', 'rb')
     times = pickle.load(file)
     file.close()
 
-    timeExpiry = times.get(dict)
+    timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
         response = session.get(Constants.NEO_FRUIT, headers=Constants.HEADERS)
@@ -256,7 +237,7 @@ def fruitMachine(session):
         header = POST.getPostHeader(postFields, Constants.NEO_FRUIT)
         source = session.post(Constants.NEO_FRUIT, postFields, headers=Constants.HEADERS, verify=False).text
 
-        times[dict] = timestamp.getTimestamp(waitTime)
+        times[key] = timestamp.getTimestamp(waitTime)
 
         file = open(r'times.pkl', 'wb')
         pickle.dump(times, file)
@@ -266,14 +247,11 @@ def fruitMachine(session):
         print("Already did fruit machine in last 24 hours")
 
 def shrine(session):
+    global times
     waitTime = 12
-    dict = "shrine"
+    key = "shrine"
 
-    file = open(r'times.pkl', 'rb')
-    times = pickle.load(file)
-    file.close()
-
-    timeExpiry = times.get(dict)
+    timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
         response = web.get(session, Constants.NEO_SHRINE)
@@ -284,7 +262,7 @@ def shrine(session):
 
         print("Went to shrine")
 
-        times[dict] = timestamp.getTimestamp(waitTime)
+        times[key] = timestamp.getTimestamp(waitTime)
 
         file = open(r'times.pkl', 'wb')
         pickle.dump(times, file)
