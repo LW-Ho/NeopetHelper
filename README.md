@@ -13,6 +13,11 @@ Runs the most common and lucrative Neopet daily activies. Currently it includes:
 * Collecting bank interest
 * Buying daily allotment of stocks
 * Spinning Trudy's Surprise Wheeel
+* Coltzans Shrine
+* Fishing Hole
+* Giant Omelette
+* TDMGPOP
+* Healing Springs
 * More to come :)
 
 ## Classes
