@@ -9,10 +9,15 @@ If there's a task you need done let me know and I'll try to get that for you soo
 Basic python knowledge is needed but to get it running all you have to do is add your username and password to main.py and run it.
 
 ## Dailies.py
-Runs the most common and lucrative Neopet daily activies. Currently it includes: <br>
+Runs the most common and lucrative Neopet daily activities. Currently it includes: <br>
 * Collecting bank interest
 * Buying daily allotment of stocks
 * Spinning Trudy's Surprise Wheeel
+* Coltzans Shrine
+* Fishing Hole
+* Giant Omelette
+* TDMGPOP
+* Healing Springs
 * More to come :)
 
 ## Classes
