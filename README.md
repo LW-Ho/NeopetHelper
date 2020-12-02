@@ -18,6 +18,7 @@ Runs the most common and lucrative Neopet daily activities. Currently it include
 * Giant Omelette
 * TDMGPOP
 * Healing Springs
+* Advent Calendar
 * More to come :)
 
 ## Classes
