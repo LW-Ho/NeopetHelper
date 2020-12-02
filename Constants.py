@@ -15,6 +15,9 @@ NEO_BANK_INTEREST = "http://www.neopets.com/process_bank.phtml"
 STOCK_MARKET_LIST = "http://www.neopets.com/stockmarket.phtml?type=list&full=true"
 
 #DAILIES
+NEO_ADVENT_CALENDAR = "http://www.neopets.com/winter/adventcalendar.phtml"
+NEO_PROCESS_ADVENT = "http://www.neopets.com/winter/process_adventcalendar.phtml"
+
 NEO_TRUDYS = "http://www.neopets.com/trudys_surprise.phtml?delevent=yes"
 NEO_TRUDYS_SPIN = "http://www.neopets.com/trudydaily/ajax/claimprize.php"
 

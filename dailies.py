@@ -48,9 +48,32 @@ def dailies(session):
     omelette(session)
     tdmbgpop(session)
     healingSprings(session)
+    adventCalendar(session)
     #sticky(session)
     #tombola(session)
     #fruitMachine(session)
+
+def adventCalendar(session):
+    global times
+
+    december = 12
+
+    # Only execute if we're in the month of december
+    if int(time.strftime("%m")) == december:
+        key = "advent"
+        timeExpiry = times.get(key)
+
+        if timeExpiry == None or time.time() > timeExpiry:
+            response = web.get(session, Constants.NEO_ADVENT_CALENDAR)
+
+            web.post(session, Constants.NEO_PROCESS_ADVENT, {}, Constants.NEO_ADVENT_CALENDAR)
+
+            print("Collected Advent Calendar")
+            times[key] = timestamp.endOfDay()
+
+            file = open('times.pkl', 'wb')
+            pickle.dump(times, file)
+            file.close()
 
 def trudysSurprise(session):
     global times
