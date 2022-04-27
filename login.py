@@ -1,4 +1,6 @@
-import requests, Constants, web, pickle
+import Constants, web, pickle
+import logging
+LOGGER = logging.getLogger('Login')
 
 #Login function
 def login(session, username, password):
@@ -15,7 +17,7 @@ def login(session, username, password):
         logged_in = verify_login(username, response)
 
         if logged_in:
-            print("Logged in with cookies")
+            LOGGER.info("Logged in with cookies")
 
     except (OSError, IOError) as e:
         file = 3
@@ -34,9 +36,9 @@ def login(session, username, password):
         logged_in = verify_login(username, response)
 
     if not logged_in:
-        print("Login Failed")
+        LOGGER.info("Login Failed")
     else:
-        print("Login Successful")
+        LOGGER.info("Login Successful")
 
     return logged_in
 

@@ -1,5 +1,9 @@
-import Constants, requests, timestamp, pickle, time, web, re, bank
+import Constants, timestamp, pickle, time, web, re, bank
 from bs4 import BeautifulSoup
+
+import logging
+LOGGER = logging.getLogger('Stock')
+
 
 def __get_cheapest_stock(session):
     min_price = 15 # most users can only buy stocks at 15 or greater although some can at 10
@@ -49,7 +53,7 @@ def buy_stock(session, times):
 
                 postFields = {"_ref_ck": ref, "type": "buy", "ticker_symbol": ticker, "amount_shares": shares}
                 web.post(session, Constants.NEO_STOCK_BUY_PROCESS, postFields, Constants.NEO_STOCK_BUY + ticker)
-                print("Bought " + str(shares) + " of " + ticker + "!")
+                LOGGER.info("Bought " + str(shares) + " of " + ticker + "!")
 
                 times[key] = timestamp.endOfDay()
 
@@ -58,7 +62,7 @@ def buy_stock(session, times):
                 file.close()
 
         else:
-            print("No stocks currently trading below 20np")
+            LOGGER.info("No stocks currently trading below 20np")
             times[key] = timestamp.end_of_hour()
 
 #Unused for the time being

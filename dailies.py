@@ -6,20 +6,35 @@ too busy being an adult
 NOTES:
 Does not work with a pin
 '''
-
+import asyncio, logging
 import login, Constants, web, bank, stocks
 import requests, time, timestamp, pickle
 
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+LOGGER = logging.getLogger('NeopetHelper')
+
+SLEEPTIME = 60 * 60 * 8 # 8 Hours
+
 times = {}
 
-def main():
+async def main():
     # Login details
     username = ""
     password = ""
 
     session = requests.Session()
 
-    login.login(session, username, password)
+    result = login.login(session, username, password)
+    if not result:
+        LOGGER.info('Login Falied, next time to try it again, sleeping 180s')
+        await asyncio.sleep(180)
+        return # next time to login
+
     login.save_cookies(session)
 
     global times
@@ -28,7 +43,7 @@ def main():
     try:
         file = open('times.pkl', 'rb')
     except FileNotFoundError:
-        print("Creating file")
+        LOGGER.info("Creating file")
         file = open('times.pkl', 'wb')
         file.close()
     else:
@@ -36,6 +51,9 @@ def main():
         file.close()
 
     dailies(session)
+
+    LOGGER.info('Work done, sleeping time '+str(SLEEPTIME)+' ... ')
+    await asyncio.sleep(SLEEPTIME)
 
 def dailies(session):
     global times
@@ -68,7 +86,7 @@ def adventCalendar(session):
 
             web.post(session, Constants.NEO_PROCESS_ADVENT, {}, Constants.NEO_ADVENT_CALENDAR)
 
-            print("Collected Advent Calendar")
+            LOGGER.info("Collected Advent Calendar")
             times[key] = timestamp.endOfDay()
 
             file = open('times.pkl', 'wb')
@@ -91,7 +109,7 @@ def trudysSurprise(session):
         postFields = {"action": "prizeclaimed"}
         web.post(session, Constants.NEO_TRUDYS_SPIN, postFields, Constants.NEO_TRUDYS)
 
-        print("Spun Trudy's Surprise Wheel")
+        LOGGER.info("Spun Trudy's Surprise Wheel")
 
         times[key] = timestamp.endOfDay()
 
@@ -112,7 +130,7 @@ def fishing(session):
 
         source = web.post(session, Constants.NEO_FISHING, postFields, Constants.NEO_FISHING)
 
-        print("Went Fishing")
+        LOGGER.info("Went Fishing")
 
         times[key] = timestamp.getTimestamp(waitTime)
 
@@ -136,7 +154,7 @@ def tombola(session):
         postFields = {}
         source = web.post(session, Constants.NEO_TOMBOLA_PLAY, postFields, Constants.NEO_TOMBOLA)
 
-        print("Played Tombola")
+        LOGGER.info("Played Tombola")
 
         times[key] = timestamp.endOfDay()
 
@@ -156,7 +174,7 @@ def tdmbgpop(session):
 
         source = web.post(session, Constants.NEO_TDMBGPOP, postFields, Constants.NEO_TDMBGPOP)
 
-        print("Visited TDMBGPOP")
+        LOGGER.info("Visited TDMBGPOP")
 
         times[key] = timestamp.endOfDay()
 
@@ -177,7 +195,7 @@ def healingSprings(session):
 
         source = web.post(session, Constants.NEO_SPRINGS, postFields, Constants.NEO_SPRINGS)
 
-        print("Went to healing springs")
+        LOGGER.info("Went to healing springs")
 
         times[key] = timestamp.getTimestamp(waitTime)
 
@@ -195,7 +213,7 @@ def sticky(session):
     if timeExpiry == None or time.time() > timeExpiry:
         response = web.get(session, Constants.NEO_STICKY, Constants.NEO_SPRINGS)
 
-        print("Got Sticky Snowball")
+        LOGGER.info("Got Sticky Snowball")
 
         times[key] = timestamp.getTimestamp(waitTime)
 
@@ -214,7 +232,7 @@ def omelette(session):
 
         source = web.post(session, Constants.NEO_OMELETTE, postFields, Constants.NEO_OMELETTE)
 
-        print("Collected an omelette")
+        LOGGER.info("Collected an omelette")
 
         times[key] = timestamp.endOfDay()
 
@@ -234,7 +252,7 @@ def jelly(session):
 
         source = web.post(session, Constants.NEO_JELLY, postFields, Constants.NEO_JELLY)
 
-        print("Collected Jelly")
+        LOGGER.info("Collected Jelly")
 
         times[key] = timestamp.endOfDay()
 
@@ -267,7 +285,7 @@ def fruitMachine(session):
         file.close()
 
     else:
-        print("Already did fruit machine in last 24 hours")
+        LOGGER.info("Already did fruit machine in last 24 hours")
 
 def shrine(session):
     global times
@@ -283,7 +301,7 @@ def shrine(session):
         postFields = {"type": "approach"}
         source = web.post(session, Constants.NEO_SHRINE, postFields, Constants.NEO_SHRINE)
 
-        print("Went to shrine")
+        LOGGER.info("Went to shrine")
 
         times[key] = timestamp.getTimestamp(waitTime)
 
@@ -292,4 +310,5 @@ def shrine(session):
         file.close()
 
 if __name__ == "__main__":
-    main()
+    while True:
+        asyncio.run(main())        
