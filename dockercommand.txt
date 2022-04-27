@@ -1,0 +1,4 @@
+docker build -t neopethelper:latest .
+docker save -o neopethelper.tar neopethelper:latest
+
+# remember remove old images.
