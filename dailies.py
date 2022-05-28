@@ -9,6 +9,16 @@ Does not work with a pin
 import asyncio, logging
 import login, Constants, web, bank, stocks
 import requests, time, timestamp, pickle
+import gmail
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path='.env') # container path
+USERNAME        = str(os.environ.get('USERNAME'))
+PASSWORD        = str(os.environ.get('PASSWORD'))
+FAIL_RETRY_SECOND   = int(os.environ.get('FAIL_RETRY_SECOND'))
+SUCCESS_NEXT_TIME   = int(os.environ.get('SUCCESS_NEXT_TIME'))
 
 logging.basicConfig(
     level=logging.INFO,
@@ -24,18 +34,25 @@ times = {}
 
 async def main():
     # Login details
-    username = ""
-    password = ""
+    username = USERNAME
+    password = PASSWORD
 
     session = requests.Session()
 
     result = login.login(session, username, password)
     if not result:
-        LOGGER.info('Login Falied, next time to try it again, sleeping 180s')
-        await asyncio.sleep(180)
+        LOGGER.info('Login Falied, send email to notify.') 
+        try: 
+            gmail.notify('error')
+        except:
+            LOGGER.error('send email error.')
+        LOGGER.info('next time to try it again, sleeping '+str(FAIL_RETRY_SECOND)+'s')
+        await asyncio.sleep(FAIL_RETRY_SECOND)
         return # next time to login
 
     login.save_cookies(session)
+
+    gmail.notify('start')
 
     global times
 
@@ -52,8 +69,8 @@ async def main():
 
     dailies(session)
 
-    LOGGER.info('Work done, sleeping time '+str(SLEEPTIME)+' ... ')
-    await asyncio.sleep(SLEEPTIME)
+    LOGGER.info('Work done, sleeping time '+str(SUCCESS_NEXT_TIME)+' ... ')
+    await asyncio.sleep(SUCCESS_NEXT_TIME)
 
 def dailies(session):
     global times
