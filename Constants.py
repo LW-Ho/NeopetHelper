@@ -1,50 +1,50 @@
-NEO_HOMEPAGE = "http://www.neopets.com/"
-NEO_LOGIN = "http://www.neopets.com/login/"
-NEO_LOGIN_REQUEST = "http://www.neopets.com/login.phtml"
+NEO_HOMEPAGE = "https://www.neopets.com/"
+NEO_LOGIN = "https://www.neopets.com/login/"
+NEO_LOGIN_REQUEST = "https://www.neopets.com/login.phtml"
 
 #INVENTORY
-NEO_INVENTORY_QS = "http://www.neopets.com/quickstock.phtml"
-NEO_INVENTORY_PROCESS = "http://www.neopets.com/process_quickstock.phtml"
-NEO_INVENTORY_R = "http://www.neopets.com/inventory.phtml"
+NEO_INVENTORY_QS = "https://www.neopets.com/quickstock.phtml"
+NEO_INVENTORY_PROCESS = "https://www.neopets.com/process_quickstock.phtml"
+NEO_INVENTORY_R = "https://www.neopets.com/inventory.phtml"
 
 #BANK
-NEO_BANK = "http://www.neopets.com/bank.phtml"
-NEO_BANK_INTEREST = "http://www.neopets.com/process_bank.phtml"
+NEO_BANK = "https://www.neopets.com/bank.phtml"
+NEO_BANK_INTEREST = "https://www.neopets.com/process_bank.phtml"
 
 #STOCK MARKET
-STOCK_MARKET_LIST = "http://www.neopets.com/stockmarket.phtml?type=list&full=true"
+STOCK_MARKET_LIST = "https://www.neopets.com/stockmarket.phtml?type=list&full=true"
 
 #DAILIES
-NEO_ADVENT_CALENDAR = "http://www.neopets.com/winter/adventcalendar.phtml"
-NEO_PROCESS_ADVENT = "http://www.neopets.com/winter/process_adventcalendar.phtml"
+NEO_ADVENT_CALENDAR = "https://www.neopets.com/winter/adventcalendar.phtml"
+NEO_PROCESS_ADVENT = "https://www.neopets.com/winter/process_adventcalendar.phtml"
 
-NEO_TRUDYS = "http://www.neopets.com/trudys_surprise.phtml?delevent=yes"
-NEO_TRUDYS_SPIN = "http://www.neopets.com/trudydaily/ajax/claimprize.php"
+NEO_TRUDYS = "https://www.neopets.com/trudys_surprise.phtml?delevent=yes"
+NEO_TRUDYS_SPIN = "https://www.neopets.com/trudydaily/ajax/claimprize.php"
 
-NEO_FISHING = "http://www.neopets.com/water/fishing.phtml"
+NEO_FISHING = "https://www.neopets.com/water/fishing.phtml"
 
-NEO_TOMBOLA = "http://www.neopets.com/island/tombola.phtml"
-NEO_TOMBOLA_PLAY = "http://www.neopets.com/island/tombola2.phtml"
+NEO_TOMBOLA = "https://www.neopets.com/island/tombola.phtml"
+NEO_TOMBOLA_PLAY = "https://www.neopets.com/island/tombola2.phtml"
 
-NEO_TDMBGPOP = "http://www.neopets.com/faerieland/tdmbgpop.phtml"
+NEO_TDMBGPOP = "https://www.neopets.com/faerieland/tdmbgpop.phtml"
 
-NEO_SPRINGS = "http://www.neopets.com/faerieland/springs.phtml"
-NEO_STICKY = "http://www.neopets.com/faerieland/process_springs.phtml?obj_info_id=8429"
+NEO_SPRINGS = "https://www.neopets.com/faerieland/springs.phtml"
+NEO_STICKY = "https://www.neopets.com/faerieland/process_springs.phtml?obj_info_id=8429"
 
-NEO_OMELETTE = "http://www.neopets.com/prehistoric/omelette.phtml"
+NEO_OMELETTE = "https://www.neopets.com/prehistoric/omelette.phtml"
 
-NEO_JELLY = "http://www.neopets.com/jelly/jelly.phtml"
+NEO_JELLY = "https://www.neopets.com/jelly/jelly.phtml"
 
-NEO_FRUIT = "http://www.neopets.com/desert/fruit/index.phtml"
+NEO_FRUIT = "https://www.neopets.com/desert/fruit/index.phtml"
 
-NEO_SHRINE = "http://www.neopets.com/desert/shrine.phtml"
+NEO_SHRINE = "https://www.neopets.com/desert/shrine.phtml"
 
-NEO_STOCKLIST = "http://www.neopets.com/stockmarket.phtml"
-NEO_STOCK_BUY_PROCESS = "http://www.neopets.com/process_stockmarket.phtml"
-NEO_STOCK_BUY = "http://www.neopets.com/stockmarket.phtml?type=buy&ticker=" #Need to append desired ticker
+NEO_STOCKLIST = "https://www.neopets.com/stockmarket.phtml"
+NEO_STOCK_BUY_PROCESS = "https://www.neopets.com/process_stockmarket.phtml"
+NEO_STOCK_BUY = "https://www.neopets.com/stockmarket.phtml?type=buy&ticker=" #Need to append desired ticker
 
 #Shop wizard
-NEO_SHOP_WIZARD = "http://www.neopets.com/market.phtml"
+NEO_SHOP_WIZARD = "https://www.neopets.com/market.phtml"
 
 #POST requests
 HEADERS = {

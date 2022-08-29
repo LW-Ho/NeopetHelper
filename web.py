@@ -1,6 +1,8 @@
 from urllib.parse import urlencode, quote_plus
 import Constants, re, requests, json
 from bs4 import BeautifulSoup
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def check_for_random_event(response):
     if 'class="randomEvent"' in response:
@@ -9,6 +11,11 @@ def check_for_random_event(response):
         div = soup.find("div", {'id':re.compile('^randomEventDiv')})
         text = div.find("div", {"class": "copy"}).getText().strip()
         print(text)
+
+def check_for_announcement(response):
+    if 'class="bg-pattern"' in response:
+        print("-----------Important Announcement!------------")
+        return True
 
 def get(session, url, referer = "" ):
     headers = {
@@ -47,7 +54,7 @@ def post(session, url, postFields, referer):
     headers["Origin"] = Constants.NEO_HOMEPAGE
     headers['Referer'] = referer
 
-    r = session.post(url, postFields, headers=headers, allow_redirects=True, verify=False).text
+    r = session.post(url, postFields, headers=headers, allow_redirects=True).text
     check_for_random_event(r)
 
     return r

@@ -5,6 +5,7 @@ LOGGER = logging.getLogger('Login')
 #Login function
 def login(session, username, password):
     logged_in = False
+    retry = 0
 
     try:
         file = pickle.load(open("cookies.p", "rb"))
@@ -13,8 +14,15 @@ def login(session, username, password):
             session.cookies.update(pickle.load(file))
 
         #Navigate to login page to try/get initial cookies **if you don't do this step it requires an extra post field that I haven't found
-        response = web.get(session, Constants.NEO_LOGIN)
-        logged_in = verify_login(username, response)
+        while(retry < 5):
+            response = web.get(session, Constants.NEO_LOGIN)
+            if web.check_for_announcement(response):
+                retry += 1
+            else:
+                break
+        
+        if response:
+            logged_in = verify_login(username, response)
 
         if logged_in:
             LOGGER.info("Logged in with cookies")
@@ -22,8 +30,11 @@ def login(session, username, password):
     except (OSError, IOError) as e:
         file = 3
         pickle.dump(file, open("cookies.p", "wb"))
+    except Exception as e:
+        LOGGER.error(e)
 
     #If saved cookies don't work then log in again
+    retry = 0
     if not logged_in:
         destination = "" #value for a key:value pair required for POST request login
 
@@ -31,7 +42,13 @@ def login(session, username, password):
         postFields = {"destination": destination, "username": username, "password": password, }
 
         #Send POST to login
-        response = web.post(session, Constants.NEO_LOGIN_REQUEST, postFields, Constants.NEO_LOGIN)
+        while(retry < 5):
+            response = web.post(session, Constants.NEO_LOGIN_REQUEST, postFields, Constants.NEO_LOGIN)
+            if web.check_for_announcement(response):
+                retry += 1
+                LOGGER.info(retry)
+            else:
+                break
 
         logged_in = verify_login(username, response)
 
