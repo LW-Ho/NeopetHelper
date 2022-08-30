@@ -7,9 +7,13 @@ NOTES:
 Does not work with a pin
 '''
 import asyncio, logging
+from glob import glob
 import login, Constants, web, bank, stocks
+from trainingSchool import TrainingSchool
+from ShopWizard import ShopWizard
 import requests, time, timestamp, pickle
 import gmail
+import json
 
 import os
 from dotenv import load_dotenv
@@ -19,6 +23,8 @@ USERNAME        = str(os.environ.get('USERNAME'))
 PASSWORD        = str(os.environ.get('PASSWORD'))
 FAIL_RETRY_SECOND   = int(os.environ.get('FAIL_RETRY_SECOND'))
 SUCCESS_NEXT_TIME   = int(os.environ.get('SUCCESS_NEXT_TIME'))
+PET_LAB2_PETNAME = str(os.environ.get('PET_LAB2_PETNAME'))
+PET_TRAINING_PETNAME = str(os.environ.get('PET_TRAINING_PETNAME'))
 
 logging.basicConfig(
     level=logging.INFO,
@@ -31,6 +37,7 @@ LOGGER = logging.getLogger('NeopetHelper')
 SLEEPTIME = 60 * 60 * 8 # 8 Hours
 
 times = {}
+resultDic = {}
 
 async def main():
     # Login details
@@ -52,8 +59,6 @@ async def main():
 
     login.save_cookies(session)
 
-    gmail.notify('start')
-
     global times
 
     # Opens a pickle file that contains timestamps of when the daily was last performed
@@ -64,29 +69,101 @@ async def main():
         file = open('times.pkl', 'wb')
         file.close()
     else:
-        times = pickle.load(file)
-        file.close()
+        try:
+            times = pickle.load(file)
+            file.close()
+        except Exception as e:
+            LOGGER.error(e)
 
     dailies(session)
+
+    gmail.notify('done', json.dumps(resultDic))
 
     LOGGER.info('Work done, sleeping time '+str(SUCCESS_NEXT_TIME)+' ... ')
     await asyncio.sleep(SUCCESS_NEXT_TIME)
 
 def dailies(session):
+    global resultDic
     global times
-    bank.collectInterest(session, times)
-    stocks.buy_stock(session, times)
+    bank.collectInterest(session, times, resultDic)
+    stocks.buy_stock(session, times, resultDic)
     trudysSurprise(session)
-    shrine(session)
-    jelly(session)
-    fishing(session)
-    omelette(session)
-    tdmbgpop(session)
-    healingSprings(session)
-    adventCalendar(session)
+    # shrine(session)
+    # jelly(session)
+    # fishing(session)
+    # omelette(session)
+    # tdmbgpop(session)
+    # healingSprings(session)
+    # adventCalendar(session)
     #sticky(session)
     #tombola(session)
     #fruitMachine(session)
+    # petlab2(session)
+    # islandTraining(session)
+
+def islandTraining(session):
+    global resultDic
+    global times
+    waitTime = 0.5
+    key = "islandTraining"
+    petName = PET_TRAINING_PETNAME
+
+    timeExpiry = times.get(key)
+
+    if timeExpiry == None or time.time() > timeExpiry or True:
+        trainingSchool = TrainingSchool(session)
+        shopWizard = ShopWizard(session)
+        payDoneMessage = []
+
+        # Check pet status
+        postFields = {"type" : "complete", "pet_name": petName}
+        result = web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_END, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS)
+
+        # Choice pet
+        postFields = {"type" : "start", "course_type": "Endurance", "pet_name": petName}
+        result = web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_START, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_COURSES)
+
+        # Check stone(s)
+        response = web.get(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS)
+        codestones = trainingSchool.checkStone(response, petName)
+
+        # Buy stone
+        for stone in codestones:
+            price = shopWizard.buy(stone, max_searches=5)
+            payDoneMessage.append(stone+': '+str(price[0]))
+
+        # Pay Stone
+        response = web.get(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_PAY_STONE+petName)
+
+        resultDic[key] = {petName: payDoneMessage}
+        times[key] = timestamp.getTimestamp(waitTime)
+
+        file = open(r'times.pkl', 'wb')
+        pickle.dump(times, file)
+        file.close()
+
+def petlab2(session):
+    global resultDic
+    global times
+    waitTime = 0.5
+    key = "petlab2"
+
+    timeExpiry = times.get(key)
+
+    if timeExpiry == None or time.time() > timeExpiry:
+        response = web.get(session, Constants.NEO_PET_LAB2)
+
+        postFields = {"chosen" : PET_LAB2_PETNAME}
+        result = web.post(session, Constants.NEO_PET_LAB2_PROCESS, postFields, Constants.NEO_PET_LAB2)
+
+        LOGGER.info("Pet Lab 2 Done PetName : "+PET_LAB2_PETNAME)
+        resultDic[key] = {PET_LAB2_PETNAME: "Done"}
+
+        times[key] = timestamp.getTimestamp(waitTime)
+
+        file = open(r'times.pkl', 'wb')
+        pickle.dump(times, file)
+        file.close()
 
 def adventCalendar(session):
     global times
@@ -111,6 +188,7 @@ def adventCalendar(session):
             file.close()
 
 def trudysSurprise(session):
+    global resultDic
     global times
 
     key = "trudy"
@@ -127,6 +205,7 @@ def trudysSurprise(session):
         web.post(session, Constants.NEO_TRUDYS_SPIN, postFields, Constants.NEO_TRUDYS)
 
         LOGGER.info("Spun Trudy's Surprise Wheel")
+        resultDic[key] = {"Spun Trudy's Surprise Wheel": "Done"}
 
         times[key] = timestamp.endOfDay()
 
@@ -200,6 +279,7 @@ def tdmbgpop(session):
         file.close()
 
 def healingSprings(session):
+    global resultDic
     global times
     waitTime = 0.5
     key = "springs"
@@ -215,6 +295,7 @@ def healingSprings(session):
         LOGGER.info("Went to healing springs")
 
         times[key] = timestamp.getTimestamp(waitTime)
+        resultDic[key] = {"Went to healing springs": "Done"}
 
         file = open(r'times.pkl', 'wb')
         pickle.dump(times, file)

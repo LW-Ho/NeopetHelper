@@ -46,6 +46,17 @@ NEO_STOCK_BUY = "https://www.neopets.com/stockmarket.phtml?type=buy&ticker=" #Ne
 #Shop wizard
 NEO_SHOP_WIZARD = "https://www.neopets.com/market.phtml"
 
+# Mystery Island Training School
+NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_START = "https://www.neopets.com/island/process_training.phtml"
+NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_END   = "https://www.neopets.com/island/process_training.phtml"
+NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS = "https://www.neopets.com/island/training.phtml?type=status"
+NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_COURSES = "https://www.neopets.com/island/training.phtml?type=courses"
+NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_PAY_STONE = "https://www.neopets.com/island/process_training.phtml?type=pay&pet_name="
+
+# PetLab
+NEO_PET_LAB2 = "https://www.neopets.com/lab2.phtml"
+NEO_PET_LAB2_PROCESS = "https://www.neopets.com/process_lab2.phtml"
+
 #POST requests
 HEADERS = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36',

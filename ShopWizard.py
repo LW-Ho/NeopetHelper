@@ -46,8 +46,9 @@ class ShopWizard:
         except:
             print("Error in __parse_search function : could not scrape search results")
 
-        for x in range(len(shop_owners)):
-            search_results.append(SearchResult(shop_owners[x].getText(), int(quantities[x].getText()), int(prices[x].getText()[:-3].replace(",","")), shop_links[x]["href"]))
+        if shop_owners: # Fixed UnboundLocalError
+            for x in range(len(shop_owners)):
+                search_results.append(SearchResult(shop_owners[x].getText(), int(quantities[x].getText()), int(prices[x].getText()[:-3].replace(",","")), shop_links[x]["href"]))
 
         return search_results
 

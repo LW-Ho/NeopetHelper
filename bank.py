@@ -50,7 +50,7 @@ def withdraw(session, amount):
         LOGGER.info("Insufficient Funds")
         return False
 
-def collectInterest(session, times):
+def collectInterest(session, times, resultDic:dict = {}):
     key = "interest"
 
     timeExpiry = times.get(key)
@@ -66,6 +66,7 @@ def collectInterest(session, times):
 
         LOGGER.info("Bank interest collected :)")
         times[key] = timestamp.endOfDay()
+        resultDic[key] = {"Bank interest collected :)": "Done"}
 
         file = open('times.pkl', 'wb')
         pickle.dump(times, file)

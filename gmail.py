@@ -12,14 +12,14 @@ GMAIL_APPLICATION_TOKEN         = str(os.environ.get('GMAIL_APPLICATION_TOKEN'))
 SENDER_GMAIL                    = str(os.environ.get('SENDER_GMAIL'))
 RECEIVER_EMAIL                  = str(os.environ.get('RECEIVER_EMAIL'))
 
-def notify(method=''):
-    if method == 'start':
-
+def notify(method='', message =''):
+    if method == 'done':
         gmail_content = MIMEMultipart()
 
         gmail_content["subject"] = '[INFO] Running neopets helper'
         gmail_content["from"] = SENDER_GMAIL
         gmail_content["to"] = RECEIVER_EMAIL
+        gmail_content.attach(MIMEText(message, 'plain'))
 
         with smtplib.SMTP(host='smtp.gmail.com', port='587') as smtp:
             try:
@@ -38,6 +38,7 @@ def notify(method=''):
         gmail_content["subject"] = '[ERROR] Login failed neopets helper'
         gmail_content["from"] = SENDER_GMAIL
         gmail_content["to"] = RECEIVER_EMAIL
+        gmail_content.attach(MIMEText(message, 'plain'))
 
         with smtplib.SMTP(host='smtp.gmail.com', port='587') as smtp:
             try:
