@@ -1,6 +1,8 @@
 # Update
 
 Support Asyncio, Docker Container, Gmail notify.
+Support Island Training School. (Auto buy codestone from shop wizard)
+Support Pet Lab2. (Need to open this map)
 
 Please create a .env file to set your private information.
 
