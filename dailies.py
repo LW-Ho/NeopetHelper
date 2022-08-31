@@ -7,7 +7,7 @@ NOTES:
 Does not work with a pin
 '''
 import asyncio, logging
-from glob import glob
+from random import randrange
 import login, Constants, web, bank, stocks
 from trainingSchool import TrainingSchool
 from ShopWizard import ShopWizard
@@ -33,8 +33,6 @@ logging.basicConfig(
 )
 
 LOGGER = logging.getLogger('NeopetHelper')
-
-SLEEPTIME = 60 * 60 * 8 # 8 Hours
 
 times = {}
 resultDic = {}
@@ -79,8 +77,9 @@ async def main():
 
     gmail.notify('done', json.dumps(resultDic))
 
-    LOGGER.info('Work done, sleeping time '+str(SUCCESS_NEXT_TIME)+' ... ')
-    await asyncio.sleep(SUCCESS_NEXT_TIME)
+    mins = randrange(600,1200) + SUCCESS_NEXT_TIME
+    LOGGER.info('Work done, sleeping time '+str(mins)+' ... ')
+    await asyncio.sleep(mins)
 
 def dailies(session):
     global resultDic
@@ -111,36 +110,39 @@ def islandTraining(session):
     timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry or True:
-        trainingSchool = TrainingSchool(session)
-        shopWizard = ShopWizard(session)
-        payDoneMessage = []
+        try:
+            trainingSchool = TrainingSchool(session)
+            shopWizard = ShopWizard(session)
+            payDoneMessage = []
 
-        # Check pet status
-        postFields = {"type" : "complete", "pet_name": petName}
-        result = web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_END, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS)
+            # Check pet status
+            postFields = {"type" : "complete", "pet_name": petName}
+            result = web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_END, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS)
 
-        # Choice pet
-        postFields = {"type" : "start", "course_type": "Endurance", "pet_name": petName}
-        result = web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_START, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_COURSES)
+            # Choice pet
+            postFields = {"type" : "start", "course_type": "Endurance", "pet_name": petName}
+            result = web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_START, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_COURSES)
 
-        # Check stone(s)
-        response = web.get(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS)
-        codestones = trainingSchool.checkStone(response, petName)
+            # Check stone(s)
+            response = web.get(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS)
+            codestones = trainingSchool.checkStone(response, petName)
 
-        # Buy stone
-        for stone in codestones:
-            price = shopWizard.buy(stone, max_searches=5)
-            payDoneMessage.append(stone+': '+str(price[0]))
+            # Buy stone
+            for stone in codestones:
+                price = shopWizard.buy(stone, max_searches=5)
+                payDoneMessage.append(stone+': '+str(price[0]))
 
-        # Pay Stone
-        response = web.get(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_PAY_STONE+petName)
+            # Pay Stone
+            response = web.get(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_PAY_STONE+petName)
 
-        resultDic[key] = {petName: payDoneMessage}
-        times[key] = timestamp.getTimestamp(waitTime)
+            resultDic[key] = {petName: payDoneMessage}
+            times[key] = timestamp.getTimestamp(waitTime)
 
-        file = open(r'times.pkl', 'wb')
-        pickle.dump(times, file)
-        file.close()
+            file = open(r'times.pkl', 'wb')
+            pickle.dump(times, file)
+            file.close()
+        except:
+            resultDic[key] = {PET_TRAINING_PETNAME: "Fail"}
 
 def petlab2(session):
     global resultDic
@@ -151,19 +153,22 @@ def petlab2(session):
     timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
-        response = web.get(session, Constants.NEO_PET_LAB2)
+        try:
+            response = web.get(session, Constants.NEO_PET_LAB2)
 
-        postFields = {"chosen" : PET_LAB2_PETNAME}
-        result = web.post(session, Constants.NEO_PET_LAB2_PROCESS, postFields, Constants.NEO_PET_LAB2)
+            postFields = {"chosen" : PET_LAB2_PETNAME}
+            result = web.post(session, Constants.NEO_PET_LAB2_PROCESS, postFields, Constants.NEO_PET_LAB2)
 
-        LOGGER.info("Pet Lab 2 Done PetName : "+PET_LAB2_PETNAME)
-        resultDic[key] = {PET_LAB2_PETNAME: "Done"}
+            LOGGER.info("Pet Lab 2 Done PetName : "+PET_LAB2_PETNAME)
+            resultDic[key] = {PET_LAB2_PETNAME: "Done"}
 
-        times[key] = timestamp.getTimestamp(waitTime)
+            times[key] = timestamp.getTimestamp(waitTime)
 
-        file = open(r'times.pkl', 'wb')
-        pickle.dump(times, file)
-        file.close()
+            file = open(r'times.pkl', 'wb')
+            pickle.dump(times, file)
+            file.close()
+        except:
+            resultDic[key] = {PET_LAB2_PETNAME: "Fail"}
 
 def adventCalendar(session):
     global times

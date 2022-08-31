@@ -16,7 +16,7 @@ class ShopWizard:
         for i in range(max_searches):
             self.searches+=1
             if self.__shopwizard_ban == False:
-                referer = "http://www.neopets.com/market.phtml?type=wizard"
+                referer = "https://www.neopets.com/market.phtml?type=wizard"
                 postFields = {"type": "process_wizard",
                             "feedset": 0,
                             "shopwizard": item,
@@ -61,7 +61,7 @@ class ShopWizard:
             print("Total of", self.searches, "searches before ban.")
 
     def __send_purchase_request(self, Item_Search):
-        referer = "http://www.neopets.com" + Item_Search.cheapest_result().shop_link
+        referer = "https://www.neopets.com" + Item_Search.cheapest_result().shop_link
         buy_link = Constants.NEO_HOMEPAGE + Item_Search.cheapest_result().shop.shop_items[0].buy_link
         source = web.get(self.session, buy_link, referer)
 

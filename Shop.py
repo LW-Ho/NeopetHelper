@@ -28,12 +28,15 @@ class Shop():
         try:
             if len(items) > 0:
                 for item in items:
-                    buy_link = item.find("a", {'href':re.compile('^buy_item.phtml?')})["href"]
-                    obj_id = int(buy_link[buy_link.find("obj_info_id=") + 12: buy_link.find("&g=")])
-                    name = item.find("b").getText()
-                    quantity = int(item.getText()[item.getText().find(name) + len(name): item.getText().find(" ", item.getText().find(name) + len(name))])
-                    price = int(item.getText()[item.getText().find("Cost : ") + 7: item.getText().find(" NP", item.getText().find("Cost : ") + 7)].replace(",",""))
-                    shop_items.append(ShopItem(name, price, quantity, obj_id, buy_link))
+                    try:
+                        buy_link = item.find("a", {'href':re.compile('^buy_item.phtml?')})["href"]
+                        obj_id = int(buy_link[buy_link.find("obj_info_id=") + 12: buy_link.find("&g=")])
+                        name = item.find("b").getText()
+                        quantity = int(item.getText()[item.getText().find(name) + len(name): item.getText().find(" ", item.getText().find(name) + len(name))])
+                        price = int(item.getText()[item.getText().find("Cost : ") + 7: item.getText().find(" NP", item.getText().find("Cost : ") + 7)].replace(",",""))
+                        shop_items.append(ShopItem(name, price, quantity, obj_id, buy_link))
+                    except:
+                        pass
 
         except:
             with open('html.html', 'wb') as file:
@@ -46,11 +49,15 @@ class Shop():
     @staticmethod
     def __remove_duplicate(list):
         #Often a shop's item list will have a duplicate of the first item in the list
-        duplicate_item = list[0]
-        for i in range(1, len(list)):
-            if duplicate_item.obj_id == list[i].obj_id:
-                list.remove(list[i])
-                break
+        try:
+            duplicate_item = list[0]
+            for i in range(1, len(list)):
+                if duplicate_item.obj_id == list[i].obj_id:
+                    list.remove(list[i])
+                    break
+        except Exception as e:
+            print(e)
+
         return list
 
     def __update_shop(self, shop_page_source):
