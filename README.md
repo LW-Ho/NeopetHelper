@@ -26,7 +26,7 @@ Runs the most common and lucrative Neopet daily activities. Currently it include
 * Healing Springs
 * Advent Calendar
 * Pet Lab (Need to open this Map)
-* Island Training School (Default: Endurance, Auto buy codestone)
+* Island Training School (Default: Level, Auto buy codestone)
 * More to come :)
 
 ## Classes

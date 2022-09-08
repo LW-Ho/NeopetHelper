@@ -120,7 +120,7 @@ def islandTraining(session):
             result = web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_END, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS)
 
             # Choice pet
-            postFields = {"type" : "start", "course_type": "Endurance", "pet_name": petName}
+            postFields = {"type" : "start", "course_type": "Level", "pet_name": petName}
             result = web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_START, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_COURSES)
 
             # Check stone(s)
@@ -142,7 +142,7 @@ def islandTraining(session):
             pickle.dump(times, file)
             file.close()
         except:
-            resultDic[key] = {PET_TRAINING_PETNAME: "Fail"}
+            resultDic[key] = {petName: "Fail"}
 
 def petlab2(session):
     global resultDic
