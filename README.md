@@ -2,7 +2,7 @@
 
 Support Asyncio, Docker Container, Gmail notify.
 
-Please create a .env file to set your private information.
+Please check dockerfile environment variables
 
 # Neopet Helper
 This is a collection of python scripts that can be used to automate common Neopet tasks for you. At this time I've only uploaded a couple scripts. I have other scripts to perform dailies, get highscores in games, stock shops, shop wizard search, buy stocks, etc.

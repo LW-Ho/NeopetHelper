@@ -16,9 +16,6 @@ import gmail
 import json
 
 import os
-from dotenv import load_dotenv
-
-load_dotenv(dotenv_path='.env') # container path
 USERNAME        = str(os.environ.get('USERNAME'))
 PASSWORD        = str(os.environ.get('PASSWORD'))
 FAIL_RETRY_SECOND   = int(os.environ.get('FAIL_RETRY_SECOND'))

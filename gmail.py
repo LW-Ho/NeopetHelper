@@ -5,14 +5,16 @@ from email.mime.multipart import MIMEMultipart
 LOGGER = logging.getLogger('Gmail Notify')
 
 import os
-from dotenv import load_dotenv
-
-load_dotenv(dotenv_path='.env') # container path
+GMAIL_ENABLE                    = int(os.environ.get('GMAIL_ENABLE'))
 GMAIL_APPLICATION_TOKEN         = str(os.environ.get('GMAIL_APPLICATION_TOKEN'))
 SENDER_GMAIL                    = str(os.environ.get('SENDER_GMAIL'))
 RECEIVER_EMAIL                  = str(os.environ.get('RECEIVER_EMAIL'))
 
 def notify(method='', message =''):
+    if GMAIL_ENABLE == 0:
+        LOGGER.info('Gmail notify is disable')
+        return False
+
     if method == 'done':
         gmail_content = MIMEMultipart()
 
