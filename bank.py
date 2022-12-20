@@ -16,9 +16,13 @@ def getBankBalance(response):
 
 def getOnHandBalance(response):
     soup = BeautifulSoup(response, "html.parser")
-    tag = soup.findChildren("a", attrs={'id' : 'npanchor'})[0].string
-    onHandBalance = tag.replace(",","")
-    return int(onHandBalance)
+    # Fixed index out of range
+    try:
+        tag = soup.findChildren("a", attrs={'id' : 'npanchor'})[0].string
+        onHandBalance = tag.replace(",","")
+        return int(onHandBalance)
+    except:
+        return 0
 
 def deposit(session, amount):
     response = web.get(session, Constants.NEO_BANK)

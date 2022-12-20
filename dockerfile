@@ -1,4 +1,4 @@
-FROM python:3.8-alpine
+FROM joyzoursky/python-chromedriver:3.8-selenium
 
 USER root
 
@@ -9,7 +9,7 @@ RUN pip install -r requirement.txt
 
 ENV USERNAME=
 ENV PASSWORD=
-ENV FAIL_RETRY_SECOND=5
+ENV FAIL_RETRY_SECOND=3600
 ENV SUCCESS_NEXT_TIME=3600
 ENV PET_LAB2_PETNAME=
 ENV PET_TRAINING_PETNAME=

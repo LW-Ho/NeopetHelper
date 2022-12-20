@@ -16,12 +16,12 @@ import gmail
 import json
 
 import os
-USERNAME        = str(os.environ.get('USERNAME'))
-PASSWORD        = str(os.environ.get('PASSWORD'))
-FAIL_RETRY_SECOND   = int(os.environ.get('FAIL_RETRY_SECOND'))
-SUCCESS_NEXT_TIME   = int(os.environ.get('SUCCESS_NEXT_TIME'))
-PET_LAB2_PETNAME = str(os.environ.get('PET_LAB2_PETNAME'))
-PET_TRAINING_PETNAME = str(os.environ.get('PET_TRAINING_PETNAME'))
+USERNAME        = str(os.environ.get('USERNAME', ''))
+PASSWORD        = str(os.environ.get('PASSWORD', ''))
+FAIL_RETRY_SECOND   = int(os.environ.get('FAIL_RETRY_SECOND', '3600'))
+SUCCESS_NEXT_TIME   = int(os.environ.get('SUCCESS_NEXT_TIME', '3600'))
+PET_LAB2_PETNAME = str(os.environ.get('PET_LAB2_PETNAME', ''))
+PET_TRAINING_PETNAME = str(os.environ.get('PET_TRAINING_PETNAME', ''))
 
 logging.basicConfig(
     level=logging.INFO,

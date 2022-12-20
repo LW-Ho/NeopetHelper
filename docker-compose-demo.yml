@@ -1,0 +1,18 @@
+version: '2'
+services:
+  neopet-helper:
+    image: whiteho/neopethelper:latest
+    environment:
+      USERNAME: 
+      PASSWORD: 
+      PET_LAB2_PETNAME: 
+      PET_TRAINING_PETNAME: 
+      GMAIL_ENABLE: 0
+      GMAIL_APPLICATION_TOKEN: 
+      SENDER_GMAIL: 
+      RECEIVER_EMAIL: 
+      MAX_LEVEL: 250
+      MAX_Strength: 249
+      MAX_Defence: 249
+      MAX_Agility: 249
+      MAX_Endurance: 249

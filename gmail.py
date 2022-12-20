@@ -5,10 +5,10 @@ from email.mime.multipart import MIMEMultipart
 LOGGER = logging.getLogger('Gmail Notify')
 
 import os
-GMAIL_ENABLE                    = int(os.environ.get('GMAIL_ENABLE'))
-GMAIL_APPLICATION_TOKEN         = str(os.environ.get('GMAIL_APPLICATION_TOKEN'))
-SENDER_GMAIL                    = str(os.environ.get('SENDER_GMAIL'))
-RECEIVER_EMAIL                  = str(os.environ.get('RECEIVER_EMAIL'))
+GMAIL_ENABLE                    = int(os.environ.get('GMAIL_ENABLE', '0'))
+GMAIL_APPLICATION_TOKEN         = str(os.environ.get('GMAIL_APPLICATION_TOKEN', ''))
+SENDER_GMAIL                    = str(os.environ.get('SENDER_GMAIL', ''))
+RECEIVER_EMAIL                  = str(os.environ.get('RECEIVER_EMAIL', ''))
 
 def notify(method='', message =''):
     if GMAIL_ENABLE == 0:

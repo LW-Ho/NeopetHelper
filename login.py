@@ -1,17 +1,22 @@
-import Constants, web, pickle
+import requests
+import Constants, web, pickle, sys
 import logging
 LOGGER = logging.getLogger('Login')
 
 #Login function
-def login(session, username, password):
+def login(session: requests.Session, username, password):
     logged_in = False
     retry = 0
+    cookies = None
 
     try:
         file = pickle.load(open("cookies.p", "rb"))
+        try:
+            with open('cookies.p', 'rb') as file:
+                session.cookies.update(pickle.load(file))
+        except Exception as e:
+            LOGGER.error(sys.exc_info())
 
-        with open('cookies.p', 'rb') as file:
-            session.cookies.update(pickle.load(file))
 
         #Navigate to login page to try/get initial cookies **if you don't do this step it requires an extra post field that I haven't found
         while(retry < 5):
@@ -49,7 +54,8 @@ def login(session, username, password):
                 LOGGER.info(retry)
             else:
                 break
-
+        
+        # LOGGER.info(response)
         logged_in = verify_login(username, response)
 
     if not logged_in:

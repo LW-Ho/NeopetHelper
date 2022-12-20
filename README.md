@@ -1,6 +1,6 @@
 # Update
 
-Support Asyncio, Docker Container, Gmail notify.
+Support Asyncio, Docker Container, Gmail notify, use selenium avoid stackpath CDN.
 
 Please check dockerfile environment variables
 
