@@ -4,6 +4,10 @@ Support Asyncio, Docker Container, Gmail notify, use selenium avoid stackpath CD
 
 Please check dockerfile environment variables
 
+Warning:
+This docker image support Intel (linux/amd64), because selenium can not running on Apple Silicon(ARM64).
+So, if u only Apple Silicon need run other container to replace selenium use webdriver remote method.
+
 # Neopet Helper
 This is a collection of python scripts that can be used to automate common Neopet tasks for you. At this time I've only uploaded a couple scripts. I have other scripts to perform dailies, get highscores in games, stock shops, shop wizard search, buy stocks, etc.
 

@@ -72,6 +72,7 @@ async def main():
 
     dailies(session)
 
+    LOGGER.info(resultDic)
     gmail.notify('done', json.dumps(resultDic))
 
     mins = randrange(600,1200) + SUCCESS_NEXT_TIME
@@ -94,8 +95,10 @@ def dailies(session):
     #sticky(session)
     #tombola(session)
     #fruitMachine(session)
-    # petlab2(session)
-    # islandTraining(session)
+    # if PET_LAB2_PETNAME:
+    #     petlab2(session)
+    # if PET_TRAINING_PETNAME:
+    #     islandTraining(session)
 
 def islandTraining(session):
     global resultDic

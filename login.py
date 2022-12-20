@@ -7,7 +7,6 @@ LOGGER = logging.getLogger('Login')
 def login(session: requests.Session, username, password):
     logged_in = False
     retry = 0
-    cookies = None
 
     try:
         file = pickle.load(open("cookies.p", "rb"))

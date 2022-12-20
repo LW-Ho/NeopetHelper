@@ -43,7 +43,7 @@ def get_cookies(url):
       """
     })
     browser.get(url)
-    time.sleep(5)
+    time.sleep(10)
     _d = {}
     for i in browser.get_cookies():
         _d[i.get('name')] = i.get('value')
@@ -71,11 +71,10 @@ def get(session, url, referer = "", cookies={}):
 
     cookies = get_cookies(Constants.NEO_LOGIN) # avoid stackpath CDN
     r = session.get(url, headers=headers, cookies=cookies, allow_redirects=True, verify=False).text
-    check_for_random_event(r)
 
     return r
 
-def post(session, url, postFields, referer):
+def post(session, url, postFields, referer, cookies={}):
     headers = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
             "Accept-Encoding": "gzip, deflate",
@@ -95,6 +94,5 @@ def post(session, url, postFields, referer):
 
     cookies = get_cookies(Constants.NEO_LOGIN) # avoid stackpath CDN
     r = session.post(url, postFields, headers=headers, cookies=cookies, allow_redirects=True, verify=False).text
-    check_for_random_event(r)
 
     return r
