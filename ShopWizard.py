@@ -11,7 +11,7 @@ class ShopWizard:
         self.__shopwizard_ban_duration_min = 0
         self.__does_not_exist = False
 
-    def __search(self, item, max_searches, criteria="exact", min_price = 0, max_price = 999999):
+    async def __search(self, item, max_searches, criteria="exact", min_price = 0, max_price = 999999):
         new_search = ItemSearch(item)
         for i in range(max_searches):
             self.searches+=1
@@ -25,7 +25,7 @@ class ShopWizard:
                             "min_price": min_price,
                             "max_price": max_price}
 
-                search_results_page_source = web.post(self.session, Constants.NEO_SHOP_WIZARD, postFields, referer)
+                search_results_page_source = await web.post(self.session, Constants.NEO_SHOP_WIZARD, postFields, referer)
                 self.__check_shopwizard_ban(search_results_page_source)
                 new_search.add_shops(self.__parse_search(search_results_page_source, item))
 
@@ -60,10 +60,10 @@ class ShopWizard:
             print("ShopWizard banned for " + str(self.__shopwizard_ban_duration_min) + " minutes.")
             print("Total of", self.searches, "searches before ban.")
 
-    def __send_purchase_request(self, Item_Search):
+    async def __send_purchase_request(self, Item_Search):
         referer = "https://www.neopets.com" + Item_Search.cheapest_result().shop_link
         buy_link = Constants.NEO_HOMEPAGE + Item_Search.cheapest_result().shop.shop_items[0].buy_link
-        source = web.get(self.session, buy_link, referer)
+        source = await web.get(self.session, buy_link, referer)
 
         Item_Search.decrease_shop_quantity()
 
@@ -115,14 +115,14 @@ class ShopWizard:
     '''
     Sends a GET request to navigate to the shop with the cheapest priced item.
     '''
-    def __open_shop(self, Item_Search):
+    async def __open_shop(self, Item_Search):
         if Item_Search.cheapest_result() is not None:
-            response = web.get(self.session, Constants.NEO_HOMEPAGE + Item_Search.cheapest_result().shop_link)
+            response = await web.get(self.session, Constants.NEO_HOMEPAGE + Item_Search.cheapest_result().shop_link)
 
             while "Sorry - The owner of this shop has been frozen!" in response:
                 print("Shop Frozen")
                 Item_Search.remove_shop()
-                response = web.get(self.session, Constants.NEO_HOMEPAGE + Item_Search.cheapest_result().shop_link)
+                response = await web.get(self.session, Constants.NEO_HOMEPAGE + Item_Search.cheapest_result().shop_link)
 
             Item_Search.cheapest_result().add_shop_details(response, self.session)
 

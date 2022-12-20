@@ -41,7 +41,7 @@ async def main():
 
     session = requests.Session()
 
-    result = login.login(session, username, password)
+    result = await login.login(session, username, password)
     if not result:
         LOGGER.info('Login Falied, send email to notify.') 
         try: 
@@ -70,37 +70,36 @@ async def main():
         except Exception as e:
             LOGGER.error(e)
 
-    dailies(session)
+    await dailies(session)
 
-    LOGGER.info(resultDic)
     gmail.notify('done', json.dumps(resultDic))
-
-    mins = randrange(600,1200) + SUCCESS_NEXT_TIME
+    
+    mins = randrange(200,1200) + SUCCESS_NEXT_TIME
     LOGGER.info('Work done, sleeping time '+str(mins)+' ... ')
     await asyncio.sleep(mins)
 
-def dailies(session):
+async def dailies(session):
     global resultDic
     global times
-    bank.collectInterest(session, times, resultDic)
-    stocks.buy_stock(session, times, resultDic)
-    trudysSurprise(session)
+    await bank.collectInterest(session, times, resultDic)
+    await stocks.buy_stock(session, times, resultDic)
+    await trudysSurprise(session)
     # shrine(session)
     # jelly(session)
-    # fishing(session)
+    await fishing(session)
     # omelette(session)
     # tdmbgpop(session)
-    # healingSprings(session)
+    await healingSprings(session)
     # adventCalendar(session)
     #sticky(session)
     #tombola(session)
     #fruitMachine(session)
-    # if PET_LAB2_PETNAME:
-    #     petlab2(session)
-    # if PET_TRAINING_PETNAME:
-    #     islandTraining(session)
+    if PET_LAB2_PETNAME:
+        await petlab2(session)
+    if PET_TRAINING_PETNAME:
+        await islandTraining(session)
 
-def islandTraining(session):
+async def islandTraining(session):
     global resultDic
     global times
     waitTime = 0.5
@@ -117,14 +116,14 @@ def islandTraining(session):
 
             # Check pet status
             postFields = {"type" : "complete", "pet_name": petName}
-            result = web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_END, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS)
+            result = await web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_END, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS)
 
             # Choice pet
             postFields = {"type" : "start", "course_type": "Level", "pet_name": petName}
-            result = web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_START, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_COURSES)
+            result = await web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_START, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_COURSES)
 
             # Check stone(s)
-            response = web.get(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS)
+            response = await web.get(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS)
             codestones = trainingSchool.checkStone(response, petName)
 
             # Buy stone
@@ -133,7 +132,7 @@ def islandTraining(session):
                 payDoneMessage.append(stone+': '+str(price[0]))
 
             # Pay Stone
-            response = web.get(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_PAY_STONE+petName)
+            response = await web.get(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_PAY_STONE+petName)
 
             resultDic[key] = {petName: payDoneMessage}
             times[key] = timestamp.getTimestamp(waitTime)
@@ -144,7 +143,7 @@ def islandTraining(session):
         except:
             resultDic[key] = {petName: "Fail"}
 
-def petlab2(session):
+async def petlab2(session):
     global resultDic
     global times
     waitTime = 0.5
@@ -154,10 +153,10 @@ def petlab2(session):
 
     if timeExpiry == None or time.time() > timeExpiry:
         try:
-            response = web.get(session, Constants.NEO_PET_LAB2)
+            response = await web.get(session, Constants.NEO_PET_LAB2)
 
             postFields = {"chosen" : PET_LAB2_PETNAME}
-            result = web.post(session, Constants.NEO_PET_LAB2_PROCESS, postFields, Constants.NEO_PET_LAB2)
+            result = await web.post(session, Constants.NEO_PET_LAB2_PROCESS, postFields, Constants.NEO_PET_LAB2)
 
             LOGGER.info("Pet Lab 2 Done PetName : "+PET_LAB2_PETNAME)
             resultDic[key] = {PET_LAB2_PETNAME: "Done"}
@@ -170,7 +169,7 @@ def petlab2(session):
         except:
             resultDic[key] = {PET_LAB2_PETNAME: "Fail"}
 
-def adventCalendar(session):
+async def adventCalendar(session):
     global times
 
     december = 12
@@ -181,9 +180,9 @@ def adventCalendar(session):
         timeExpiry = times.get(key)
 
         if timeExpiry == None or time.time() > timeExpiry:
-            response = web.get(session, Constants.NEO_ADVENT_CALENDAR)
+            response = await web.get(session, Constants.NEO_ADVENT_CALENDAR)
 
-            web.post(session, Constants.NEO_PROCESS_ADVENT, {}, Constants.NEO_ADVENT_CALENDAR)
+            await web.post(session, Constants.NEO_PROCESS_ADVENT, {}, Constants.NEO_ADVENT_CALENDAR)
 
             LOGGER.info("Collected Advent Calendar")
             times[key] = timestamp.endOfDay()
@@ -192,7 +191,7 @@ def adventCalendar(session):
             pickle.dump(times, file)
             file.close()
 
-def trudysSurprise(session):
+async def trudysSurprise(session):
     global resultDic
     global times
 
@@ -200,14 +199,14 @@ def trudysSurprise(session):
     timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
-        response = web.get(session, Constants.NEO_TRUDYS)
+        response = await web.get(session, Constants.NEO_TRUDYS)
 
         postFields = {"action": "beginroll"}
-        web.post(session, Constants.NEO_TRUDYS_SPIN, postFields, Constants.NEO_TRUDYS)
+        await web.post(session, Constants.NEO_TRUDYS_SPIN, postFields, Constants.NEO_TRUDYS)
         time.sleep(11) # Sleeps because when you spin the wheel you must wait for it to stop before collecting prize
 
         postFields = {"action": "prizeclaimed"}
-        web.post(session, Constants.NEO_TRUDYS_SPIN, postFields, Constants.NEO_TRUDYS)
+        await web.post(session, Constants.NEO_TRUDYS_SPIN, postFields, Constants.NEO_TRUDYS)
 
         LOGGER.info("Spun Trudy's Surprise Wheel")
         resultDic[key] = {"Spun Trudy's Surprise Wheel": "Done"}
@@ -218,7 +217,7 @@ def trudysSurprise(session):
         pickle.dump(times, file)
         file.close()
 
-def fishing(session):
+async def fishing(session):
     global times
     waitTime = 13
     key = "fishing"
@@ -226,10 +225,10 @@ def fishing(session):
     timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
-        response = web.get(session, Constants.NEO_FISHING)
+        response = await web.get(session, Constants.NEO_FISHING)
         postFields = {"go_fish": "1"}
 
-        source = web.post(session, Constants.NEO_FISHING, postFields, Constants.NEO_FISHING)
+        source = await web.post(session, Constants.NEO_FISHING, postFields, Constants.NEO_FISHING)
 
         LOGGER.info("Went Fishing")
 
@@ -240,7 +239,7 @@ def fishing(session):
         file.close()
 
 #Tombola might be broken, if not it needs to check if tombola is closed. Otherwise it looks bad and it lags hard.
-def tombola(session):
+async def tombola(session):
     key = "tombola"
 
     file = open(r'times.pkl', 'rb')
@@ -250,10 +249,10 @@ def tombola(session):
     timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
-        response = web.get(session, Constants.NEO_TOMBOLA)
+        response = await web.get(session, Constants.NEO_TOMBOLA)
 
         postFields = {}
-        source = web.post(session, Constants.NEO_TOMBOLA_PLAY, postFields, Constants.NEO_TOMBOLA)
+        source = await web.post(session, Constants.NEO_TOMBOLA_PLAY, postFields, Constants.NEO_TOMBOLA)
 
         LOGGER.info("Played Tombola")
 
@@ -263,17 +262,17 @@ def tombola(session):
         pickle.dump(times, file)
         file.close()
 
-def tdmbgpop(session):
+async def tdmbgpop(session):
     global times
     key = "tdmbgpop"
 
     timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
-        response = web.get(session, Constants.NEO_TDMBGPOP)
+        response = await web.get(session, Constants.NEO_TDMBGPOP)
         postFields = {"talkto": "1"}
 
-        source = web.post(session, Constants.NEO_TDMBGPOP, postFields, Constants.NEO_TDMBGPOP)
+        source = await web.post(session, Constants.NEO_TDMBGPOP, postFields, Constants.NEO_TDMBGPOP)
 
         LOGGER.info("Visited TDMBGPOP")
 
@@ -283,7 +282,7 @@ def tdmbgpop(session):
         pickle.dump(times, file)
         file.close()
 
-def healingSprings(session):
+async def healingSprings(session):
     global resultDic
     global times
     waitTime = 0.5
@@ -292,10 +291,10 @@ def healingSprings(session):
     timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
-        response = web.get(session, Constants.NEO_SPRINGS)
+        response = await web.get(session, Constants.NEO_SPRINGS)
         postFields = {"type": "heal"}
 
-        source = web.post(session, Constants.NEO_SPRINGS, postFields, Constants.NEO_SPRINGS)
+        source = await web.post(session, Constants.NEO_SPRINGS, postFields, Constants.NEO_SPRINGS)
 
         LOGGER.info("Went to healing springs")
 
@@ -306,7 +305,7 @@ def healingSprings(session):
         pickle.dump(times, file)
         file.close()
 
-def sticky(session):
+async def sticky(session):
     global times
     waitTime = 0.5
     key = "sticky"
@@ -314,7 +313,7 @@ def sticky(session):
     timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
-        response = web.get(session, Constants.NEO_STICKY, Constants.NEO_SPRINGS)
+        response = await web.get(session, Constants.NEO_STICKY, Constants.NEO_SPRINGS)
 
         LOGGER.info("Got Sticky Snowball")
 
@@ -324,16 +323,16 @@ def sticky(session):
         pickle.dump(times, file)
         file.close()
 
-def omelette(session):
+async def omelette(session):
     global times
     key = "omelette"
     timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
-        response = web.get(session, Constants.NEO_OMELETTE)
+        response = await web.get(session, Constants.NEO_OMELETTE)
         postFields = {"type": "get_omelette"}
 
-        source = web.post(session, Constants.NEO_OMELETTE, postFields, Constants.NEO_OMELETTE)
+        source = await web.post(session, Constants.NEO_OMELETTE, postFields, Constants.NEO_OMELETTE)
 
         LOGGER.info("Collected an omelette")
 
@@ -343,17 +342,17 @@ def omelette(session):
         pickle.dump(times, file)
         file.close()
 
-def jelly(session):
+async def jelly(session):
     global times
     key = "jelly"
 
     timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
-        response = web.get(session, Constants.NEO_JELLY)
+        response = await web.get(session, Constants.NEO_JELLY)
         postFields = {"type": "get_jelly"}
 
-        source = web.post(session, Constants.NEO_JELLY, postFields, Constants.NEO_JELLY)
+        source = await web.post(session, Constants.NEO_JELLY, postFields, Constants.NEO_JELLY)
 
         LOGGER.info("Collected Jelly")
 
@@ -363,7 +362,7 @@ def jelly(session):
         pickle.dump(times, file)
         file.close()
 
-def fruitMachine(session):
+async def fruitMachine(session):
     waitTime = 24
     key = "fruit"
 
@@ -390,7 +389,7 @@ def fruitMachine(session):
     else:
         LOGGER.info("Already did fruit machine in last 24 hours")
 
-def shrine(session):
+async def shrine(session):
     global times
     waitTime = 12
     key = "shrine"
@@ -398,11 +397,11 @@ def shrine(session):
     timeExpiry = times.get(key)
 
     if timeExpiry == None or time.time() > timeExpiry:
-        response = web.get(session, Constants.NEO_SHRINE)
+        response = await web.get(session, Constants.NEO_SHRINE)
 
         #This one is tough you need to extract a hidden value from the source
         postFields = {"type": "approach"}
-        source = web.post(session, Constants.NEO_SHRINE, postFields, Constants.NEO_SHRINE)
+        source = await web.post(session, Constants.NEO_SHRINE, postFields, Constants.NEO_SHRINE)
 
         LOGGER.info("Went to shrine")
 

@@ -24,29 +24,29 @@ def getOnHandBalance(response):
     except:
         return 0
 
-def deposit(session, amount):
-    response = web.get(session, Constants.NEO_BANK)
+async def deposit(session, amount):
+    response = await web.get(session, Constants.NEO_BANK)
     onHandBalance = getOnHandBalance(response)
 
     #send POST to deposit
     if onHandBalance >= amount and amount != 0:
         postFields = {"type": "deposit", "amount": amount}
-        source = web.post(session, Constants.NEO_BANK_INTEREST, postFields, Constants.NEO_BANK)
+        source = await web.post(session, Constants.NEO_BANK_INTEREST, postFields, Constants.NEO_BANK)
 
     else:
         LOGGER.info("You don't have " + str(amount) + " to deposit!")
 
     return onHandBalance
 
-def withdraw(session, amount):
+async def withdraw(session, amount):
 
-    response = web.get(session, Constants.NEO_BANK)
+    response = await web.get(session, Constants.NEO_BANK)
     bankBalance = getBankBalance(response)
 
     #withdraw
     if amount <= bankBalance and amount!=0:
         postFields = {"type": "withdraw", "amount": amount}
-        web.post(session, Constants.NEO_BANK_INTEREST, postFields, Constants.NEO_BANK)
+        await web.post(session, Constants.NEO_BANK_INTEREST, postFields, Constants.NEO_BANK)
         return True
 
     #insufficient funds
@@ -54,7 +54,7 @@ def withdraw(session, amount):
         LOGGER.info("Insufficient Funds")
         return False
 
-def collectInterest(session, times, resultDic:dict = {}):
+async def collectInterest(session, times, resultDic:dict = {}):
     key = "interest"
 
     timeExpiry = times.get(key)
@@ -62,11 +62,11 @@ def collectInterest(session, times, resultDic:dict = {}):
     if timeExpiry == None or time.time() > timeExpiry:
         #Future edit check if interest has been collected
         #Return interest collected
-        web.get(session, Constants.NEO_BANK, Constants.NEO_HOMEPAGE)
+        await web.get(session, Constants.NEO_BANK, Constants.NEO_HOMEPAGE)
 
         #send POST to collect interest
         postFields = {"type": "interest"}
-        web.post(session, Constants.NEO_BANK_INTEREST, postFields, Constants.NEO_BANK)
+        await web.post(session, Constants.NEO_BANK_INTEREST, postFields, Constants.NEO_BANK)
 
         LOGGER.info("Bank interest collected :)")
         times[key] = timestamp.endOfDay()

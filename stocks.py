@@ -5,7 +5,7 @@ import logging
 LOGGER = logging.getLogger('Stock')
 
 
-def __get_cheapest_stock(session):
+async def __get_cheapest_stock(session):
     min_price = 15 # most users can only buy stocks at 15 or greater although some can at 10
     lowest_price = 20 # lowest priced stock's price
     ticker = None # lowest priced stock' ticker
@@ -14,7 +14,7 @@ def __get_cheapest_stock(session):
     current_price_index = 4
     gap = 5
 
-    source = web.get(session, Constants.STOCK_MARKET_LIST)
+    source = await web.get(session, Constants.STOCK_MARKET_LIST)
 
     soup = BeautifulSoup(source, "html.parser")
     stock_params = soup.find_all("td", {"align": "center", "bgcolor": "#eeeeff"})
@@ -26,7 +26,7 @@ def __get_cheapest_stock(session):
 
     return ticker, lowest_price #Returns cheapest available stock above or at min_price
 
-def buy_stock(session, times, resultDic:dict = {}):
+async def buy_stock(session, times, resultDic:dict = {}):
     key = "stocks"
 
     timeExpiry = times.get(key)
@@ -34,12 +34,12 @@ def buy_stock(session, times, resultDic:dict = {}):
     if timeExpiry == None or time.time() > timeExpiry:
 
         shares = 1000
-        ticker, price = __get_cheapest_stock(session)
+        ticker, price = await __get_cheapest_stock(session)
 
         if ticker is not None:
             funds = True
 
-            source = web.get(session, Constants.NEO_STOCK_BUY + ticker)
+            source = await web.get(session, Constants.NEO_STOCK_BUY + ticker)
             balance = bank.getOnHandBalance(source)
 
             # Not enough nps get money from bank
@@ -52,7 +52,7 @@ def buy_stock(session, times, resultDic:dict = {}):
                 ref = soup.find("input", {"name": "_ref_ck"})["value"]
 
                 postFields = {"_ref_ck": ref, "type": "buy", "ticker_symbol": ticker, "amount_shares": shares}
-                web.post(session, Constants.NEO_STOCK_BUY_PROCESS, postFields, Constants.NEO_STOCK_BUY + ticker)
+                await web.post(session, Constants.NEO_STOCK_BUY_PROCESS, postFields, Constants.NEO_STOCK_BUY + ticker)
                 LOGGER.info("Bought " + str(shares) + " of " + ticker + "!")
 
                 times[key] = timestamp.endOfDay()

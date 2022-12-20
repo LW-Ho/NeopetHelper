@@ -68,10 +68,10 @@ class Shop():
         #This function assumes you searched for a particular item and so that item will be in position 0
         self.buy_item(0)
 
-    def buy_item(self, item_index):
+    async def buy_item(self, item_index):
         item = self.shop_items[item_index]
         referer = Constants.NEO_HOMEPAGE + "browseshop.phtml?owner=" + self.owner
-        updated_shop_page_source = web.get(self.session, Constants.NEO_HOMEPAGE + item.buy_link, referer=referer)
+        updated_shop_page_source = await web.get(self.session, Constants.NEO_HOMEPAGE + item.buy_link, referer=referer)
 
         #Could be some error checking, expired link, price change, someone else bought it
         self.__update_shop(updated_shop_page_source)

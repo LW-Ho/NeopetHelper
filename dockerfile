@@ -1,4 +1,4 @@
-FROM joyzoursky/python-chromedriver:3.8-selenium
+FROM mcr.microsoft.com/playwright/python:v1.28.0-focal
 
 USER root
 

@@ -4,7 +4,7 @@ import logging
 LOGGER = logging.getLogger('Login')
 
 #Login function
-def login(session: requests.Session, username, password):
+async def login(session: requests.Session, username, password):
     logged_in = False
     retry = 0
 
@@ -19,7 +19,7 @@ def login(session: requests.Session, username, password):
 
         #Navigate to login page to try/get initial cookies **if you don't do this step it requires an extra post field that I haven't found
         while(retry < 5):
-            response = web.get(session, Constants.NEO_LOGIN)
+            response = await web.get(session, Constants.NEO_LOGIN)
             if web.check_for_announcement(response):
                 retry += 1
             else:
@@ -47,7 +47,7 @@ def login(session: requests.Session, username, password):
 
         #Send POST to login
         while(retry < 5):
-            response = web.post(session, Constants.NEO_LOGIN_REQUEST, postFields, Constants.NEO_LOGIN)
+            response = await web.post(session, Constants.NEO_LOGIN_REQUEST, postFields, Constants.NEO_LOGIN)
             if web.check_for_announcement(response):
                 retry += 1
                 LOGGER.info(retry)
