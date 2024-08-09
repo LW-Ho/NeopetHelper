@@ -9,14 +9,6 @@ async def login(session: requests.Session, username, password):
     retry = 0
 
     try:
-        file = pickle.load(open("cookies.p", "rb"))
-        try:
-            with open('cookies.p', 'rb') as file:
-                session.cookies.update(pickle.load(file))
-        except Exception as e:
-            LOGGER.error(sys.exc_info())
-
-
         #Navigate to login page to try/get initial cookies **if you don't do this step it requires an extra post field that I haven't found
         while(retry < 5):
             response = await web.get(session, Constants.NEO_LOGIN)
@@ -33,7 +25,6 @@ async def login(session: requests.Session, username, password):
 
     except (OSError, IOError) as e:
         file = 3
-        pickle.dump(file, open("cookies.p", "wb"))
     except Exception as e:
         LOGGER.error(e)
 

@@ -12,7 +12,7 @@ RECEIVER_EMAIL                  = str(os.environ.get('RECEIVER_EMAIL', ''))
 
 def notify(method='', message =''):
     if GMAIL_ENABLE == 0:
-        LOGGER.info('Gmail notify is disable')
+        LOGGER.info('Gmail notify is disable '+message)
         return False
 
     if method == 'done':

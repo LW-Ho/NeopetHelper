@@ -29,42 +29,45 @@ async def __get_cheapest_stock(session):
 async def buy_stock(session, times, resultDic:dict = {}):
     key = "stocks"
 
-    timeExpiry = times.get(key)
+    try:
+        timeExpiry = times.get(key)
 
-    if timeExpiry == None or time.time() > timeExpiry:
+        if timeExpiry == None or time.time() > timeExpiry:
 
-        shares = 1000
-        ticker, price = await __get_cheapest_stock(session)
+            shares = 1000
+            ticker, price = await __get_cheapest_stock(session)
 
-        if ticker is not None:
-            funds = True
+            if ticker is not None:
+                funds = True
 
-            source = await web.get(session, Constants.NEO_STOCK_BUY + ticker)
-            balance = bank.getOnHandBalance(source)
+                source = await web.get(session, Constants.NEO_STOCK_BUY + ticker)
+                balance = bank.getOnHandBalance(source)
 
-            # Not enough nps get money from bank
-            if balance < shares*price:
-                funds = bank.withdraw(session, shares*price - balance)
+                # Not enough nps get money from bank
+                if balance < shares*price:
+                    funds = bank.withdraw(session, shares*price - balance)
 
-            # If we have enough then buy the stocks
-            if funds:
-                soup = BeautifulSoup(source, "html.parser")
-                ref = soup.find("input", {"name": "_ref_ck"})["value"]
+                # If we have enough then buy the stocks
+                if funds:
+                    soup = BeautifulSoup(source, "html.parser")
+                    ref = soup.find("input", {"name": "_ref_ck"})["value"]
 
-                postFields = {"_ref_ck": ref, "type": "buy", "ticker_symbol": ticker, "amount_shares": shares}
-                await web.post(session, Constants.NEO_STOCK_BUY_PROCESS, postFields, Constants.NEO_STOCK_BUY + ticker)
-                LOGGER.info("Bought " + str(shares) + " of " + ticker + "!")
+                    postFields = {"_ref_ck": ref, "type": "buy", "ticker_symbol": ticker, "amount_shares": shares}
+                    await web.post(session, Constants.NEO_STOCK_BUY_PROCESS, postFields, Constants.NEO_STOCK_BUY + ticker)
+                    LOGGER.info("Bought " + str(shares) + " of " + ticker + "!")
 
-                times[key] = timestamp.endOfDay()
-                resultDic[key] = {"Stock": "Bought " + str(shares) + " of " + ticker + "!"}
-                file = open('times.pkl', 'wb')
-                pickle.dump(times, file)
-                file.close()
+                    times[key] = timestamp.endOfDay()
+                    resultDic[key] = {"Stock": "Bought " + str(shares) + " of " + ticker + "!"}
+                    file = open('times.pkl', 'wb')
+                    pickle.dump(times, file)
+                    file.close()
 
-        else:
-            LOGGER.info("No stocks currently trading below 20np")
-            times[key] = timestamp.end_of_hour()
-            resultDic[key] = {"Stock": "No stocks currently trading below 20np"}
+            else:
+                LOGGER.info("No stocks currently trading below 20np")
+                times[key] = timestamp.end_of_hour()
+                resultDic[key] = {"Stock": "No stocks currently trading below 20np"}
+    except:
+        pass
 
 #Unused for the time being
 class Stock(object):

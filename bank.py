@@ -57,21 +57,25 @@ async def withdraw(session, amount):
 async def collectInterest(session, times, resultDic:dict = {}):
     key = "interest"
 
-    timeExpiry = times.get(key)
+    try:
 
-    if timeExpiry == None or time.time() > timeExpiry:
-        #Future edit check if interest has been collected
-        #Return interest collected
-        await web.get(session, Constants.NEO_BANK, Constants.NEO_HOMEPAGE)
+        timeExpiry = times.get(key)
 
-        #send POST to collect interest
-        postFields = {"type": "interest"}
-        await web.post(session, Constants.NEO_BANK_INTEREST, postFields, Constants.NEO_BANK)
+        if timeExpiry == None or time.time() > timeExpiry:
+            #Future edit check if interest has been collected
+            #Return interest collected
+            await web.get(session, Constants.NEO_BANK, Constants.NEO_HOMEPAGE)
 
-        LOGGER.info("Bank interest collected :)")
-        times[key] = timestamp.endOfDay()
-        resultDic[key] = {"Bank interest collected :)": "Done"}
+            #send POST to collect interest
+            postFields = {"type": "interest"}
+            await web.post(session, Constants.NEO_BANK_INTEREST, postFields, Constants.NEO_BANK)
 
-        file = open('times.pkl', 'wb')
-        pickle.dump(times, file)
-        file.close()
+            LOGGER.info("Bank interest collected :)")
+            times[key] = timestamp.endOfDay()
+            resultDic[key] = {"Bank interest collected :)": "Done"}
+
+            file = open('times.pkl', 'wb')
+            pickle.dump(times, file)
+            file.close()
+    except:
+        pass
