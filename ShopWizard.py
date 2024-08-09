@@ -1,6 +1,7 @@
 import Constants, web, re, timestamp, time
 from bs4 import BeautifulSoup
 from Shop import Shop, ShopItem
+import sys
 
 class ShopWizard:
     def __init__(self, session):
@@ -57,8 +58,6 @@ class ShopWizard:
             self.__shopwizard_ban = True
             self.__shopwizard_ban_time = timestamp.end_of_hour()
             self.__shopwizard_ban_duration_min = timestamp.timeRemaining(self.__shopwizard_ban_time)
-            print("ShopWizard banned for " + str(self.__shopwizard_ban_duration_min) + " minutes.")
-            print("Total of", self.searches, "searches before ban.")
 
     async def __send_purchase_request(self, Item_Search):
         referer = "https://www.neopets.com" + Item_Search.cheapest_result().shop_link
@@ -92,23 +91,24 @@ class ShopWizard:
         if len(Item_Search.search_results) < shops_to_display:
             shops_to_display = len(Item_Search.search_results)
 
-        for x in range(shops_to_display):
-            print(Item_Search.search_results[x])
-
-        print(searches, "total searches.")
         return Item_Search
 
-    def buy(self, item, quantity = 1, max_searches = 10):
+    async def buy(self, item, quantity = 1, max_searches = 10, max_price=99999):
         prices_paid = []
 
-        Item_Search = self.__search(item, max_searches)
+        Item_Search = await self.__search(item, max_searches, max_price=max_price)
 
         if Item_Search.cheapest_result() != None and self.__shopwizard_ban != True:
             for i in range(quantity):
-                self.__open_shop(Item_Search)
-                price = Item_Search.cheapest_result().shop.shop_items[0].price
-                self.__send_purchase_request(Item_Search)
-                prices_paid.append(price)
+                try:
+                    await self.__open_shop(Item_Search)
+                    
+                    price = Item_Search.cheapest_result().shop.shop_items[0].price
+                    await self.__send_purchase_request(Item_Search)
+                    prices_paid.append(price)
+                except Exception as e:
+                    print(sys.exc_info())
+                    prices_paid.append(0)
 
         return prices_paid
 
@@ -120,7 +120,6 @@ class ShopWizard:
             response = await web.get(self.session, Constants.NEO_HOMEPAGE + Item_Search.cheapest_result().shop_link)
 
             while "Sorry - The owner of this shop has been frozen!" in response:
-                print("Shop Frozen")
                 Item_Search.remove_shop()
                 response = await web.get(self.session, Constants.NEO_HOMEPAGE + Item_Search.cheapest_result().shop_link)
 
@@ -168,10 +167,13 @@ class ItemSearch:
             return -1
 
     def cheapest_result(self):
-        if len(self.search_results) == 0:
+        try:
+            if len(self.search_results) == 0:
+                return None
+            else:
+                return self.search_results[0]
+        except:
             return None
-        else:
-            return self.search_results[0]
 
     def remove_shop(self, index = 0):
         if len(self.search_results) > 0:

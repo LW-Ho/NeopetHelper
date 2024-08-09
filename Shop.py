@@ -16,6 +16,7 @@ class Shop():
     def get_shop_owner(self, shop_page_source):
         soup = BeautifulSoup(shop_page_source, "html.parser")
         owner = soup.find_all("a", {'href':re.compile('^/userlookup.phtml?')})[1].getText()
+        print('get_shop_owner '+owner)
         return owner
 
     @staticmethod
@@ -35,14 +36,16 @@ class Shop():
                         quantity = int(item.getText()[item.getText().find(name) + len(name): item.getText().find(" ", item.getText().find(name) + len(name))])
                         price = int(item.getText()[item.getText().find("Cost : ") + 7: item.getText().find(" NP", item.getText().find("Cost : ") + 7)].replace(",",""))
                         shop_items.append(ShopItem(name, price, quantity, obj_id, buy_link))
-                    except:
+                    except Exception as e:
+                        import sys
+                        print(sys.exc_info())
+                        print('scrape_shop_items '+str(e))
                         pass
 
         except:
             with open('html.html', 'wb') as file:
                 file.write(shop_page_source.encode('utf8'))
             open_new_tab("html.html")
-            print("No shop items to be scraped. Why? __scrape_shop_items function")
 
         return Shop.__remove_duplicate(shop_items)
 
