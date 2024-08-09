@@ -21,7 +21,9 @@ PASSWORD        = str(os.environ.get('PASSWORD', ''))
 FAIL_RETRY_SECOND   = int(os.environ.get('FAIL_RETRY_SECOND', '3600'))
 SUCCESS_NEXT_TIME   = int(os.environ.get('SUCCESS_NEXT_TIME', '3600'))
 PET_LAB2_PETNAME = str(os.environ.get('PET_LAB2_PETNAME', ''))
-PET_TRAINING_PETNAME = str(os.environ.get('PET_TRAINING_PETNAME', ''))
+PET_MYSTERY_ISLAND_TRAINING_PETNAME = str(os.environ.get('PET_MYSTERY_ISLAND_TRAINING_PETNAME', ''))
+PET_SECRET_NINJA_TRAINING_PETNAME = str(os.environ.get('PET_SECRET_NINJA_TRAINING_PETNAME', ''))
+PET_TRAINING_TOPIC = str(os.environ.get('PET_TRAINING_TOPIC', 'Level'))
 
 logging.basicConfig(
     level=logging.INFO,
@@ -84,20 +86,88 @@ async def dailies(session):
     await bank.collectInterest(session, times, resultDic)
     await stocks.buy_stock(session, times, resultDic)
     await trudysSurprise(session)
-    # shrine(session)
-    # jelly(session)
+    shrine(session)
+    jelly(session)
     await fishing(session)
-    # omelette(session)
-    # tdmbgpop(session)
+    omelette(session)
+    tdmbgpop(session)
     await healingSprings(session)
-    # adventCalendar(session)
-    #sticky(session)
-    #tombola(session)
-    #fruitMachine(session)
+    adventCalendar(session)
+    sticky(session)
+    tombola(session)
+    fruitMachine(session)
     if PET_LAB2_PETNAME:
         await petlab2(session)
-    if PET_TRAINING_PETNAME:
+    if PET_MYSTERY_ISLAND_TRAINING_PETNAME:
         await islandTraining(session)
+    if PET_SECRET_NINJA_TRAINING_PETNAME:
+        await secret_ninja_training(session)
+    # await buy_faerie_quests(session)
+
+async def buy_faerie_quests(session):
+    global times
+    key = "buy_faerie_quests"
+    timeExpiry = times.get(key)
+    item_name = ""
+
+    if timeExpiry == None or time.time() > timeExpiry or True:
+        try:
+            shopWizard = ShopWizard(session)
+            price = await shopWizard.buy(item_name, max_searches=5)
+            print(f"{item_name} : {price}")
+        except:
+            pass
+
+async def secret_ninja_training(session):
+    global resultDic
+    global times
+    waitTime = 0.5
+    key = "secret_ninja_training"
+    petName = PET_TRAINING_PETNAME
+
+    timeExpiry = times.get(key)
+
+    if timeExpiry == None or time.time() > timeExpiry or True:
+        try:
+            trainingSchool = TrainingSchool(session)
+            shopWizard = ShopWizard(session)
+            payDoneMessage = []
+
+            # Check pet status
+            postFields = {"type" : "complete", "pet_name": petName}
+            result = await web.post(session, Constants.NEO_SECRET_NINJA_TRAINING_SCHOOL_COMPLETE, postFields, Constants.NEO_SECRET_NINJA_TRAINING_SCHOOL_STATUS)
+
+            # Choice pet
+            postFields = {"type" : "start", "course_type": PET_TRAINING_TOPIC, "pet_name": petName}
+            result = await web.post(session, Constants.NEO_SECRET_NINJA_TRAINING_SCHOOL_START, postFields, Constants.NEO_SECRET_NINJA_TRAINING_SCHOOL_COURSES)
+
+            # First Pay Stone
+            response = await web.get(session, Constants.NEO_SECRET_NINJA_TRAINING_SCHOOL_PAY_STONE+petName)
+
+            # Check stone(s)
+            response = await web.get(session, Constants.NEO_SECRET_NINJA_TRAINING_SCHOOL_STATUS)
+            codestones = trainingSchool.checkStone(response, petName)
+
+            # Buy stone
+            for stone in codestones:
+                try:
+                    price = await shopWizard.buy(stone, max_searches=5, max_price=99999)
+                    payDoneMessage.append(stone+': '+str(price[0]))
+                except Exception as e:
+                    print(e)
+
+            # Pay Stone
+            response = await web.get(session, Constants.NEO_SECRET_NINJA_TRAINING_SCHOOL_PAY_STONE+petName)
+
+            resultDic[key] = {petName: payDoneMessage}
+            times[key] = timestamp.getTimestamp(waitTime)
+
+            file = open(r'times.pkl', 'wb')
+            pickle.dump(times, file)
+            file.close()
+        except:
+            resultDic[key] = {petName: "Fail"}
+
 
 async def islandTraining(session):
     global resultDic
@@ -119,8 +189,11 @@ async def islandTraining(session):
             result = await web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_END, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS)
 
             # Choice pet
-            postFields = {"type" : "start", "course_type": "Level", "pet_name": petName}
+            postFields = {"type" : "start", "course_type": PET_TRAINING_TOPIC, "pet_name": petName}
             result = await web.post(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_START, postFields, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_COURSES)
+
+            # First Pay Stone
+            response = await web.get(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_PAY_STONE+petName)
 
             # Check stone(s)
             response = await web.get(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS)
@@ -128,8 +201,11 @@ async def islandTraining(session):
 
             # Buy stone
             for stone in codestones:
-                price = shopWizard.buy(stone, max_searches=5)
-                payDoneMessage.append(stone+': '+str(price[0]))
+                try:
+                    price = await shopWizard.buy(stone, max_searches=5, max_price=99999)
+                    payDoneMessage.append(stone+': '+str(price[0]))
+                except Exception as e:
+                    print(e)
 
             # Pay Stone
             response = await web.get(session, Constants.NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_PAY_STONE+petName)
@@ -149,26 +225,30 @@ async def petlab2(session):
     waitTime = 0.5
     key = "petlab2"
 
-    timeExpiry = times.get(key)
+    try:
 
-    if timeExpiry == None or time.time() > timeExpiry:
-        try:
-            response = await web.get(session, Constants.NEO_PET_LAB2)
+        timeExpiry = times.get(key)
 
-            postFields = {"chosen" : PET_LAB2_PETNAME}
-            result = await web.post(session, Constants.NEO_PET_LAB2_PROCESS, postFields, Constants.NEO_PET_LAB2)
+        if timeExpiry == None or time.time() > timeExpiry:
+            try:
+                response = await web.get(session, Constants.NEO_PET_LAB2)
 
-            LOGGER.info("Pet Lab 2 Done PetName : "+PET_LAB2_PETNAME)
-            resultDic[key] = {PET_LAB2_PETNAME: "Done"}
+                postFields = {"chosen" : PET_LAB2_PETNAME}
+                result = await web.post(session, Constants.NEO_PET_LAB2_PROCESS, postFields, Constants.NEO_PET_LAB2)
 
-            times[key] = timestamp.getTimestamp(waitTime)
+                LOGGER.info("Pet Lab 2 Done PetName : "+PET_LAB2_PETNAME)
+                resultDic[key] = {PET_LAB2_PETNAME: "Done"}
 
-            file = open(r'times.pkl', 'wb')
-            pickle.dump(times, file)
-            file.close()
-        except:
-            resultDic[key] = {PET_LAB2_PETNAME: "Fail"}
+                times[key] = timestamp.getTimestamp(waitTime)
 
+                file = open(r'times.pkl', 'wb')
+                pickle.dump(times, file)
+                file.close()
+            except:
+                resultDic[key] = {PET_LAB2_PETNAME: "Fail"}
+    except:
+        pass
+    
 async def adventCalendar(session):
     global times
 
@@ -196,47 +276,54 @@ async def trudysSurprise(session):
     global times
 
     key = "trudy"
-    timeExpiry = times.get(key)
+    try:
+        timeExpiry = times.get(key)
 
-    if timeExpiry == None or time.time() > timeExpiry:
-        response = await web.get(session, Constants.NEO_TRUDYS)
+        if timeExpiry == None or time.time() > timeExpiry:
+            response = await web.get(session, Constants.NEO_TRUDYS)
 
-        postFields = {"action": "beginroll"}
-        await web.post(session, Constants.NEO_TRUDYS_SPIN, postFields, Constants.NEO_TRUDYS)
-        time.sleep(11) # Sleeps because when you spin the wheel you must wait for it to stop before collecting prize
+            postFields = {"action": "beginroll"}
+            await web.post(session, Constants.NEO_TRUDYS_SPIN, postFields, Constants.NEO_TRUDYS)
+            time.sleep(11) # Sleeps because when you spin the wheel you must wait for it to stop before collecting prize
 
-        postFields = {"action": "prizeclaimed"}
-        await web.post(session, Constants.NEO_TRUDYS_SPIN, postFields, Constants.NEO_TRUDYS)
+            postFields = {"action": "prizeclaimed"}
+            await web.post(session, Constants.NEO_TRUDYS_SPIN, postFields, Constants.NEO_TRUDYS)
 
-        LOGGER.info("Spun Trudy's Surprise Wheel")
-        resultDic[key] = {"Spun Trudy's Surprise Wheel": "Done"}
+            LOGGER.info("Spun Trudy's Surprise Wheel")
+            resultDic[key] = {"Spun Trudy's Surprise Wheel": "Done"}
 
-        times[key] = timestamp.endOfDay()
+            times[key] = timestamp.endOfDay()
 
-        file = open('times.pkl', 'wb')
-        pickle.dump(times, file)
-        file.close()
+            file = open('times.pkl', 'wb')
+            pickle.dump(times, file)
+            file.close()
+    except:
+        pass
 
 async def fishing(session):
     global times
     waitTime = 13
     key = "fishing"
 
-    timeExpiry = times.get(key)
+    try:
 
-    if timeExpiry == None or time.time() > timeExpiry:
-        response = await web.get(session, Constants.NEO_FISHING)
-        postFields = {"go_fish": "1"}
+        timeExpiry = times.get(key)
 
-        source = await web.post(session, Constants.NEO_FISHING, postFields, Constants.NEO_FISHING)
+        if timeExpiry == None or time.time() > timeExpiry:
+            response = await web.get(session, Constants.NEO_FISHING)
+            postFields = {"go_fish": "1"}
 
-        LOGGER.info("Went Fishing")
+            source = await web.post(session, Constants.NEO_FISHING, postFields, Constants.NEO_FISHING)
 
-        times[key] = timestamp.getTimestamp(waitTime)
+            LOGGER.info("Went Fishing")
 
-        file = open(r'times.pkl', 'wb')
-        pickle.dump(times, file)
-        file.close()
+            times[key] = timestamp.getTimestamp(waitTime)
+
+            file = open(r'times.pkl', 'wb')
+            pickle.dump(times, file)
+            file.close()
+    except:
+        pass
 
 #Tombola might be broken, if not it needs to check if tombola is closed. Otherwise it looks bad and it lags hard.
 async def tombola(session):
@@ -288,22 +375,27 @@ async def healingSprings(session):
     waitTime = 0.5
     key = "springs"
 
-    timeExpiry = times.get(key)
+    try:
 
-    if timeExpiry == None or time.time() > timeExpiry:
-        response = await web.get(session, Constants.NEO_SPRINGS)
-        postFields = {"type": "heal"}
+        timeExpiry = times.get(key)
 
-        source = await web.post(session, Constants.NEO_SPRINGS, postFields, Constants.NEO_SPRINGS)
+        if timeExpiry == None or time.time() > timeExpiry:
+            response = await web.get(session, Constants.NEO_SPRINGS)
+            postFields = {"type": "heal"}
 
-        LOGGER.info("Went to healing springs")
+            source = await web.post(session, Constants.NEO_SPRINGS, postFields, Constants.NEO_SPRINGS)
 
-        times[key] = timestamp.getTimestamp(waitTime)
-        resultDic[key] = {"Went to healing springs": "Done"}
+            LOGGER.info("Went to healing springs")
 
-        file = open(r'times.pkl', 'wb')
-        pickle.dump(times, file)
-        file.close()
+            times[key] = timestamp.getTimestamp(waitTime)
+            resultDic[key] = {"Went to healing springs": "Done"}
+
+            file = open(r'times.pkl', 'wb')
+            pickle.dump(times, file)
+            file.close()
+
+    except:
+        pass
 
 async def sticky(session):
     global times
