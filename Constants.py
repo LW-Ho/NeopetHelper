@@ -53,6 +53,14 @@ NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_STATUS = "https://www.neopets.com/island/trai
 NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_COURSES = "https://www.neopets.com/island/training.phtml?type=courses"
 NEO_MYSTERY_ISLAND_TRAINING_SCHOOL_PAY_STONE = "https://www.neopets.com/island/process_training.phtml?type=pay&pet_name="
 
+# Secret Ninja Training School
+NEO_SECRET_NINJA_TRAINING_SCHOOL_START = "https://www.neopets.com/island/process_fight_training.phtml"
+NEO_SECRET_NINJA_TRAINING_SCHOOL_END   = "https://www.neopets.com/island/process_fight_training.phtml"
+NEO_SECRET_NINJA_TRAINING_SCHOOL_STATUS = "https://www.neopets.com/island/fight_training.phtml?type=status"
+NEO_SECRET_NINJA_TRAINING_SCHOOL_COURSES = "https://www.neopets.com/island/fight_training.phtml?type=courses"
+NEO_SECRET_NINJA_TRAINING_SCHOOL_COMPLETE = "https://www.neopets.com/island/process_fight_training.phtml"
+NEO_SECRET_NINJA_TRAINING_SCHOOL_PAY_STONE = "https://www.neopets.com/island/process_fight_training.phtml?type=pay&pet_name="
+
 # PetLab
 NEO_PET_LAB2 = "https://www.neopets.com/lab2.phtml"
 NEO_PET_LAB2_PROCESS = "https://www.neopets.com/process_lab2.phtml"
