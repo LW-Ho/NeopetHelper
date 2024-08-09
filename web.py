@@ -32,7 +32,7 @@ async def get_cookies(url):
             context = await browser.new_context()
             page = await context.new_page()
             await page.goto(url)
-            time.sleep(10)
+            time.sleep(5)
             cookies = await context.cookies()
             await browser.close()
 
