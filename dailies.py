@@ -123,7 +123,7 @@ async def secret_ninja_training(session):
     global times
     waitTime = 0.5
     key = "secret_ninja_training"
-    petName = PET_TRAINING_PETNAME
+    petName = PET_SECRET_NINJA_TRAINING_PETNAME
 
     timeExpiry = times.get(key)
 
@@ -174,7 +174,7 @@ async def islandTraining(session):
     global times
     waitTime = 0.5
     key = "islandTraining"
-    petName = PET_TRAINING_PETNAME
+    petName = PET_MYSTERY_ISLAND_TRAINING_PETNAME
 
     timeExpiry = times.get(key)
 
